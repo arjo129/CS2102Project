@@ -1,0 +1,29 @@
+<!DOCTYPE html>  
+<head>
+  <title>UPDATE PostgreSQL data with PHP</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <style>li {list-style: none;}</style>
+</head>
+<body>
+  <h2>Supply bookid and enter</h2>
+  <ul>
+    <form name="display" action="/update" method="POST" >
+      <li>Book ID:</li>
+      <li><input type="text" name="bookid" /></li>
+      <li><input type="submit" name="submit" /></li>
+    </form>
+  </ul>
+<ul>
+<form name='update' action='/save_update' method='POST' >  
+    	<li>Book ID:</li>  
+    	<li><input type='text' name='bookid_updated' value={{book_id}} /></li>  
+    	<li>Book Name:</li>  
+    	<li><input type='text' name='book_name_updated' value="{{name}}" /></li>  
+    	<li>Price (USD):</li><li><input type='text' name='price_updated' value={{price}} /><li>  
+    	<li>Date of publication:</li>  
+    	<li><input type='text' name='dop_updated' value={{dop}} /></li>
+<li><input type='submit' name='new' /></li>    
+</form>  
+</ul>
+</body>
+</html>
