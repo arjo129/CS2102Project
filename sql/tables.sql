@@ -35,6 +35,7 @@ CREATE TABLE bid_for (
 	bidder VARCHAR(50),
 	item_id INTEGER,
 	category VARCHAR(20),
+	bid_amount NUMERIC(8, 2),
 	PRIMARY KEY (bidder, item_id, category),
 	FOREIGN KEY (bidder) REFERENCES users(email) ON DELETE CASCADE,
 	FOREIGN KEY (item_id, category) REFERENCES items(item_id, category)
