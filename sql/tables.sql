@@ -2,6 +2,7 @@ DROP TABLE IF EXISTS bid_for CASCADE;
 DROP TABLE IF EXISTS items CASCADE;
 DROP TABLE IF EXISTS item_belongs_to_category CASCADE;
 DROP TABLE IF EXISTS category CASCADE;
+DROP TABLE IF EXISTS forgot_password;
 DROP TABLE IF EXISTS users CASCADE;
 
 CREATE TABLE users (
@@ -47,6 +48,16 @@ CREATE TABLE bid_for (
 	FOREIGN KEY (item_id) REFERENCES items(item_id)
 );
 
+--Weak entity so merge
+CREATE TABLE forgot_password (
+	email VARCHAR(50),
+	reset_link VARCHAR(100) PRIMARY KEY,
+	valid BOOLEAN NOT NULL,
+	requested_time TIMESTAMP NOT NULL,
+	FOREIGN KEY (email) REFERENCES users(email)
+); 
+
+
 CREATE OR REPLACE FUNCTION check_item_at_least_one_category()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -62,3 +73,5 @@ BEFORE INSERT OR UPDATE
 ON items
 FOR EACH ROW
 EXECUTE PROCEDURE check_item_at_least_one_category();
+
+
