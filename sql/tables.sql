@@ -74,7 +74,7 @@ ON items
 FOR EACH ROW
 EXECUTE PROCEDURE check_item_at_least_one_category_table_item();
 
-CREATE OR REPLACE FUNCTION check_item_at_least_one_category_table_belongs_to()
+CREATE OR REPLACE FUNCTION check_item_at_least_one_category_table_belongs_to_update()
 RETURNS TRIGGER AS $$
 BEGIN
 IF (EXISTS (SELECT * FROM item_belongs_to_category c 
@@ -84,9 +84,24 @@ END IF;
 RETURN NULL;
 END; $$ LANGUAGE PLPGSQL;
 
-CREATE TRIGGER check_item_at_least_one_category_table_belongs_to
-BEFORE UPDATE OR DELETE
+CREATE TRIGGER check_item_at_least_one_category_table_belongs_to_update
+BEFORE UPDATE
 ON item_belongs_to_category
 FOR EACH ROW
-EXECUTE PROCEDURE check_item_at_least_one_category_table_belongs_to();
+EXECUTE PROCEDURE check_item_at_least_one_category_table_belongs_to_update();
 
+CREATE OR REPLACE FUNCTION check_item_at_least_one_category_table_belongs_to_delete()
+RETURNS TRIGGER AS $$
+BEGIN
+IF (EXISTS (SELECT * FROM item_belongs_to_category c 
+			WHERE OLD.item_id = c.item_id AND OLD.category <> c.category)) THEN
+RETURN OLD;
+END IF;
+RETURN NULL;
+END; $$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER check_item_at_least_one_category_table_belongs_to_delete
+BEFORE DELETE
+ON item_belongs_to_category
+FOR EACH ROW
+EXECUTE PROCEDURE check_item_at_least_one_category_table_belongs_to_delete();
