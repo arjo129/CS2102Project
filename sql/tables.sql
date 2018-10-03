@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS forgot_password;
 DROP TABLE IF EXISTS users CASCADE;
 
 CREATE TABLE users (
-	email VARCHAR(50),
+	email VARCHAR(50) CHECK(email LIKE '%@%.%'),
 	display_name VARCHAR(15) NOT NULL,
 	password VARCHAR(50) NOT NULL,
 	PRIMARY KEY (email)
@@ -58,7 +58,7 @@ CREATE TABLE forgot_password (
 ); 
 
 
-CREATE OR REPLACE FUNCTION check_item_at_least_one_category()
+CREATE OR REPLACE FUNCTION check_item_at_least_one_category_table_item()
 RETURNS TRIGGER AS $$
 BEGIN
 IF (EXISTS (SELECT * FROM item_belongs_to_category c 
@@ -68,10 +68,40 @@ END IF;
 RETURN NULL;
 END; $$ LANGUAGE PLPGSQL;
 
-CREATE TRIGGER check_item_at_least_one_category
+CREATE TRIGGER check_item_at_least_one_category_table_item
 BEFORE INSERT OR UPDATE
 ON items
 FOR EACH ROW
-EXECUTE PROCEDURE check_item_at_least_one_category();
+EXECUTE PROCEDURE check_item_at_least_one_category_table_item();
 
+CREATE OR REPLACE FUNCTION check_item_at_least_one_category_table_belongs_to_update()
+RETURNS TRIGGER AS $$
+BEGIN
+IF (EXISTS (SELECT * FROM item_belongs_to_category c 
+			WHERE OLD.item_id = c.item_id AND OLD.category <> c.category)) THEN
+RETURN NEW;
+END IF;
+RETURN NULL;
+END; $$ LANGUAGE PLPGSQL;
 
+CREATE TRIGGER check_item_at_least_one_category_table_belongs_to_update
+BEFORE UPDATE
+ON item_belongs_to_category
+FOR EACH ROW
+EXECUTE PROCEDURE check_item_at_least_one_category_table_belongs_to_update();
+
+CREATE OR REPLACE FUNCTION check_item_at_least_one_category_table_belongs_to_delete()
+RETURNS TRIGGER AS $$
+BEGIN
+IF (EXISTS (SELECT * FROM item_belongs_to_category c 
+			WHERE OLD.item_id = c.item_id AND OLD.category <> c.category)) THEN
+RETURN OLD;
+END IF;
+RETURN NULL;
+END; $$ LANGUAGE PLPGSQL;
+
+CREATE TRIGGER check_item_at_least_one_category_table_belongs_to_delete
+BEFORE DELETE
+ON item_belongs_to_category
+FOR EACH ROW
+EXECUTE PROCEDURE check_item_at_least_one_category_table_belongs_to_delete();
