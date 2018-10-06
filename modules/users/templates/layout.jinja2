@@ -6,7 +6,8 @@
           <script src="/static/js/jquery-3.3.1.min.js"></script>
         <script src="/static/js/popper.min.js"> </script>
         <script src="/static/js/bootstrap.min.js"></script>
-    <title>Selling stuff</title>
+        <title>Selling stuff</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     {% endblock %}
   </head>
   <body>
@@ -42,7 +43,7 @@
   </div>
 </nav>
 
-    <div id="content">{% block content %}{% endblock %}</div>
+    <div class="content" style="margin-top:10px;">{% block content %}{% endblock %}</div>
     <div id="footer">
       {% block footer %}
       &copy; Copyright 2010 by <a href="http://domain.invalid/">you</a>.

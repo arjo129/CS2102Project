@@ -1,15 +1,28 @@
 {% extends "layout.jinja2" %}
 {% block content %}
-<form>
-  <div class="container">
+    <div class="container" style="margin-top:10px;">
+    <div class="card">
+  <div class="card-body">
+      <h3>Sign in</h3>
+      {% if error %}
+      <div class="alert alert-danger" role="alert">
+          We're sorry, we could not find the username or password in our records, please try again:
+      </div>
+      {% endif %}
 
-    <label for="uname"><b>Email</b></label>
-    <input type="text" placeholder="axample@todo.com" name="email" required>
-
-    <label for="psw"><b>Password</b></label>
-    <input type="password" placeholder="Enter Password" name="password" required>
-
-    <button type="submit">Login</button>
-  </div>
-</form>
+        <form method="post">
+            <div class="form-group">
+            <label for="uname">Email:</label>
+            <input type="text" class="form-control" placeholder="bob@example.com" name="email" required>
+            </div>
+            <div class="form-group">
+            <label for="psw">Password:</label>
+            <input type="password" class="form-control" placeholder="Enter Password" name="password" required>
+            </div>
+            <button type="submit" class="btn btn-primary pull-right">Login</button>
+            <small id="emailHelp" class="form-text text-muted">Don't have an account? Sign up <a href="/signup">now</a>!</small>
+            <p></p>
+        </form>
+  </div></div>
+    </div>
 {% endblock %}

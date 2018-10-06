@@ -1,6 +1,6 @@
 from config import conn_string
 from flask import Flask, render_template, request, redirect, send_from_directory, session
-from modules.users import user_module
+from modules.users import user_module, get_current_user
 import os
 import psycopg2
 
@@ -8,6 +8,7 @@ app = Flask(__name__)
 app.secret_key = os.urandom(12)
 #add your modules as blueprints here:
 app.register_blueprint(user_module)
+
 
 @app.route("/")
 def index():
