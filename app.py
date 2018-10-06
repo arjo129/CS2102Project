@@ -1,8 +1,6 @@
 from config import conn_string
-from flask import Flask, render_template, request,redirect
-from psycopg2.extensions import AsIs, quote_ident
+from flask import Flask, render_template, request, redirect, send_from_directory
 import psycopg2
-import jinja2
 
 app = Flask(__name__)
 
@@ -21,7 +19,12 @@ def update():
     for c in curr:
         book_id, name, price, dop = c
         print(name)
-    return render_template("update.jinja", book_id=book_id, name=name, price=price, dop=dop)
+    return render_template("update.jinja2", book_id=book_id, name=name, price=price, dop=dop)
+
 @app.route("/")
 def index():
-    return render_template("index.jinja")
+    return render_template("index.jinja2")
+
+@app.route('/static/<path:path>')
+def send_js(path):
+    return send_from_directory('static', path)
