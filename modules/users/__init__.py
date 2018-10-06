@@ -1,4 +1,4 @@
-from flask import Blueprint
+from flask import Blueprint, session, render_template
 from bcrypt import hashpw, checkpw,gensalt
 from config import conn_string
 import psycopg2
@@ -49,3 +49,11 @@ def add_user(user):
     curr.execute("INSERT INTO users(display_name,email,password,role) VALUES (%s,%s,%s,%s)",
                  (user.display_name,user.email,user.password,user.role))
     conn.commit()
+
+
+user_module = Blueprint('user_module', __name__,template_folder='templates')
+
+
+@user_module.route("/login")
+def login_page():
+    return render_template("login.jinja2")

@@ -1,0 +1,15 @@
+{% extends "layout.jinja2" %}
+{% block content %}
+<form>
+  <div class="container">
+
+    <label for="uname"><b>Email</b></label>
+    <input type="text" placeholder="axample@todo.com" name="email" required>
+
+    <label for="psw"><b>Password</b></label>
+    <input type="password" placeholder="Enter Password" name="password" required>
+
+    <button type="submit">Login</button>
+  </div>
+</form>
+{% endblock %}
