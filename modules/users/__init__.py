@@ -81,12 +81,12 @@ user_module = Blueprint('user_module', __name__, template_folder='templates')
 @user_module.route("/login", methods=['GET', 'POST'])
 def login_page():
     if 'user' in session:
-        return redirect("/")
+        return redirect("/view_item")
     if request.method == 'POST':
         try:
             user = check_login(request.form["email"], request.form["password"])
             session['user'] = user.to_json()
-            return redirect("/")
+            return redirect("/view_item")
         except InvalidLoginCredentials:
             return render_template("login.jinja2", error=True)
     return render_template("login.jinja2")
@@ -108,3 +108,14 @@ def signup_page():
         return render_template("signup.jinja2", error=True)
 
     return render_template("signup.jinja2")
+
+@user_module.route("/user_profile", methods=['GET'])
+def user_profile():
+    user = request.args.get('owner');
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SELECT * from users u WHERE u.email = %s", (user,))
+    email, display_name = curr.fetchone()[:2]
+    curr.execute("SELECT * from items i, users u WHERE u.email = %s AND u.email = i.owner", (user,))
+    items = curr
+    return render_template("user_profile.jinja2", email=email, display_name=display_name, items=items)
