@@ -42,7 +42,11 @@ def get_id():
     curr = conn.cursor()
     curr.execute("SELECT MAX(item_id) FROM items")
     conn.commit()
-    return curr.fetchone()[0] + 1
+    index = curr.fetchone()[0]
+    if index:
+        return int(curr.fetchone[0])+1
+    else:
+        return 0
 
 item_module = Blueprint('item_module', __name__, template_folder='templates')
 
