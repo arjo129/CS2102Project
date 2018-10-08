@@ -119,3 +119,9 @@ def user_profile():
     curr.execute("SELECT * from items i, users u WHERE u.email = %s AND u.email = i.owner", (user,))
     items = curr
     return render_template("user_profile.jinja2", email=email, display_name=display_name, items=items)
+
+@user_module.route("/logout", methods=['GET'])
+def log_out():
+    if get_current_user():
+        del session['user']
+    return redirect("/")
