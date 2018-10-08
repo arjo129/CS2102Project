@@ -118,7 +118,13 @@ def user_profile():
     email, display_name = curr.fetchone()[:2]
     curr.execute("SELECT * from items i, users u WHERE u.email = %s AND u.email = i.owner", (user,))
     items = curr
-    return render_template("user_profile.jinja2", email=email, display_name=display_name, items=items)
+    can_view_bid = False;
+    logged_in_as = get_current_user()
+    if logged_in_as:
+        if logged_in_as.email == email:
+            print("same email")
+            can_view_bid = True
+    return render_template("user_profile.jinja2", email=email, display_name=display_name, items=items, view_bid=can_view_bid)
 
 @user_module.route("/logout", methods=['GET'])
 def log_out():
