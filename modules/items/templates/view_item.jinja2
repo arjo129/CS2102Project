@@ -3,15 +3,10 @@
     <div class="container" style="margin-top:10px;">
     <div class="card">
   <div class="card-body">
-      <h3>Items you can borrow</h3>
-        <ul>
-        {% for item in items %}
-          <p>
-              <a href="{{ url_for('item_module.bid_item', owner=item[2], name=item[1], description=item[6], item_id=item[0]) }}" style="color:black;">{{ item[1] }}</a>
-              <br> <a href="{{ url_for('user_module.user_profile', owner=item[2]) }}">{{ item[2] }} </a> <br> Description: {{ item[6] }} </p>
-        {% endfor %}
-        </ul>
-      
+      <h3>Item details</h3>
+        <p>
+            <a href="{{ url_for('item_module.bid_item', owner=item[2], name=item[1], description=item[6], item_id=item[0]) }}" style="color:black;">Name: {{ item[1] }}</a>
+            <br> <a href="{{ url_for('user_module.user_profile', owner=item[2]) }}">Owner: {{ item[2] }} </a> <br> Description: {{ item[6] }} </p>
      </div>
     </div>
 {% endblock %}

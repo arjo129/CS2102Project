@@ -1,17 +1,35 @@
-<html>
-<head>
-  <title>UPDATE PostgreSQL data with PHP</title>
-  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  <style>li {list-style: none;}</style>
-</head>
-<body>
-  <h2>Supply bookid and enter</h2>
-  <ul>
-    <form name="display" action="update" method="POST" >
-      <li>Book ID:</li>
-      <li><input type="text" name="bookid" /></li>
-      <li><input type="submit" name="submit" /></li>
-    </form>
-  </ul>
-</body>
-</html>
+{% extends "layout.jinja2" %}
+{% block content %}
+
+    <div class="container" style="margin-top:10px;">
+      <form method="get">
+        <div class="input-group mb-3">
+          <input class="form-control form-control-lg form-control-borderless" name="searchParams" type="search" placeholder="Search by number or keywords">
+          <div class="input-group-append">
+            <input class="btn btn-primary" type="submit" value="Search">
+          </div>
+        </div>
+      </form>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Owner</th>
+            <th scope="col">Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <th scope="row">{{ item.id }}</th>
+              <td>{{ item.name }}</td>
+              <td>{{ item.owner }}</td>
+              <td>{{ item.location }}</td>
+              <td><a class="btn btn-primary" href="/view_item/{{ item.id }}" role="button">View detail</a</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+{% endblock %}

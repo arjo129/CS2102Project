@@ -14,6 +14,24 @@ app.register_blueprint(item_module)
 app.register_blueprint(category_module)
 
 
+def getItems(searchParams=None):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    if searchParams != None:
+        curr.execute(
+            "SELECT * FROM items WHERE name LIKE %s OR owner LIKE %s OR location LIKE %s",
+            ('%'+searchParams+'%',
+             '%'+searchParams+'%', '%'+searchParams+'%')
+        )
+    else:
+        curr.execute("SELECT * FROM items")
+    items = []
+    for item in curr:
+        items.append({"id": item[0], "name": item[1], "owner": item[2],
+                      "location": item[3]})
+    return items
+
+
 @app.before_request
 def before_request():
     if 'user' in session:
@@ -24,7 +42,7 @@ def before_request():
 
 @app.route("/")
 def index():
-    return redirect("/view_item")
+    return render_template("index.jinja2", items=getItems(request.args.get("searchParams")))
 
 
 @app.route('/static/<path:path>')
