@@ -99,7 +99,7 @@ def bid_item():
         bidder = g.user.email
         item_id = request.args.get("item_id")
         bid_for(item_id, bidder, value)
-        return redirect("/view_item")
+        return redirect("/view_item/{}".format(item_id))
 
 
 @item_module.route("/loan_item", methods=['GET', 'POST'])
@@ -121,7 +121,7 @@ def loan_item():
                     date_start=date_start, date_end=date_end)
 
         add_item(item)
-        return redirect("/view_item")
+        return redirect("/view_item/{}".format(item_id))
     else:
         return render_template("loan_item.jinja2")
 
