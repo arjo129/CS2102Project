@@ -2,12 +2,14 @@
 {% block content %}
 
     <div class="container" style="margin-top:10px;">
-    <div class="input-group mb-3">
-    <input class="form-control form-control-lg form-control-borderless" type="search" placeholder="Search by number or keywords">
-      <div class="input-group-append">
-        <button class="btn btn-primary" type="submit">Search</button>
-      </div>
-    </div>
+      <form method="get">
+        <div class="input-group mb-3">
+          <input class="form-control form-control-lg form-control-borderless" name="searchParams" type="search" placeholder="Search by number or keywords">
+          <div class="input-group-append">
+            <input class="btn btn-primary" type="submit" value="Search">
+          </div>
+        </div>
+      </form>
       <table class="table">
         <thead>
           <tr>

@@ -59,7 +59,7 @@ def get_id():
     conn.commit()
     index = curr.fetchone()[0]
     if index:
-        return int(curr.fetchone[0])+1
+        return int(curr.fetchone()[0])+1
     else:
         return 0
 

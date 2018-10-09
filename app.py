@@ -12,15 +12,21 @@ app.register_blueprint(user_module)
 app.register_blueprint(item_module)
 
 
-def getItems():
+def getItems(searchParams=None):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
-    curr.execute(
-        "SELECT * FROM items ")
+    if searchParams != None:
+        curr.execute(
+            "SELECT * FROM items WHERE name LIKE %s OR owner LIKE %s OR location LIKE %s",
+            ('%'+searchParams+'%',
+             '%'+searchParams+'%', '%'+searchParams+'%')
+        )
+    else:
+        curr.execute("SELECT * FROM items")
     items = []
     for item in curr:
         items.append({"id": item[0], "name": item[1], "owner": item[2],
-                      "location": item[3], "description": item[6]})
+                      "location": item[3]})
     return items
 
 
@@ -34,8 +40,7 @@ def before_request():
 
 @app.route("/")
 def index():
-
-    return render_template("index.jinja2", items=getItems())
+    return render_template("index.jinja2", items=getItems(request.args.get("searchParams")))
 
 
 @app.route('/static/<path:path>')
