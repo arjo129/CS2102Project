@@ -34,6 +34,7 @@ def before_request():
 
 @app.route("/")
 def index():
+
     return render_template("index.jinja2", items=getItems())
 
 
