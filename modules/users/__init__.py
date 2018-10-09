@@ -1,4 +1,4 @@
-from flask import Blueprint, session, render_template, request, redirect
+from flask import Blueprint, session, render_template, request, redirect, g
 from bcrypt import hashpw, checkpw, gensalt
 from config import conn_string
 import psycopg2
@@ -38,6 +38,10 @@ class UserAlreadyExists(Exception):
     pass
 
 
+class UserIsBanned(Exception):
+    pass
+
+
 def check_login(email, password):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
@@ -48,6 +52,8 @@ def check_login(email, password):
                     password_hash=password_hash.encode(), role=role)
         if user.check_password(password):
             return user
+        elif user.role == 'banned':
+            raise UserIsBanned
         else:
             raise InvalidLoginCredentials
     raise InvalidLoginCredentials
@@ -94,6 +100,8 @@ def login_page():
             return redirect("/")
         except InvalidLoginCredentials:
             return render_template("login.jinja2", error=True)
+        except UserIsBanned:
+            return render_template("login.jinja2", banned=True)
     return render_template("login.jinja2")
 
 
@@ -115,23 +123,44 @@ def signup_page():
     return render_template("signup.jinja2")
 
 
-@user_module.route("/user_profile", methods=['GET'])
+OPTION_BAN_USER = "Ban this user"
+OPTION_PROMOTE_TO_ADMIN = "Promote to admin"
+OPTION_UNBAN_DEMOTE = "Unban/Demote to user"
+ADMIN_CONTROLS = [OPTION_BAN_USER, OPTION_PROMOTE_TO_ADMIN, OPTION_UNBAN_DEMOTE]
+
+
+@user_module.route("/user_profile", methods=['GET', 'POST'])
 def user_profile():
-    user = request.args.get('owner')
-    conn = psycopg2.connect(conn_string)
-    curr = conn.cursor()
-    curr.execute("SELECT * from users u WHERE u.email = %s", (user,))
-    email, display_name = curr.fetchone()[:2]
-    curr.execute(
-        "SELECT * from items i, users u WHERE u.email = %s AND u.email = i.owner", (user,))
-    items = curr
-    can_view_bid = False
-    logged_in_as = get_current_user()
-    if logged_in_as:
-        if logged_in_as.email == email:
-            print("same email")
-            can_view_bid = True
-    return render_template("user_profile.jinja2", email=email, display_name=display_name, items=items, view_bid=can_view_bid)
+    if request.method == 'POST':
+        if g.user and g.user.role == 'admin':
+            new_role = 'user'
+            if request.form.get('admin-controls') == OPTION_PROMOTE_TO_ADMIN:
+                new_role = 'admin'
+            elif request.form.get('admin-controls') == OPTION_BAN_USER:
+                new_role = 'banned'
+            conn = psycopg2.connect(conn_string)
+            curr = conn.cursor()
+            curr.execute("UPDATE users u SET role = %s WHERE u.email = %s", (new_role, request.args.get('owner')))
+            conn.commit()
+    else:
+        admin = False
+        if g.user and g.user.role == 'admin':
+            admin = True
+        user = request.args.get('owner')
+        conn = psycopg2.connect(conn_string)
+        curr = conn.cursor()
+        curr.execute("SELECT * from users u WHERE u.email = %s", (user,))
+        email, display_name, password, role = curr.fetchone()
+        role = role.capitalize()
+        curr.execute("SELECT * from items i, users u WHERE u.email = %s AND u.email = i.owner", (user,))
+        items = curr
+        can_view_bid = False;
+        logged_in_as = get_current_user()
+        if logged_in_as:
+            if logged_in_as.email == email:
+                print("same email")
+                can_view_bid = True
+        return render_template("user_profile.jinja2", role=role, email=email, display_name=display_name, items=items, view_bid=can_view_bid, admin=admin, admin_controls = ADMIN_CONTROLS)
 
 
 @user_module.route("/logout", methods=['GET'])
