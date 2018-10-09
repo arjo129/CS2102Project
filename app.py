@@ -1,27 +1,30 @@
 from config import conn_string
-from flask import Flask, render_template, request,redirect
-from psycopg2.extensions import AsIs, quote_ident
+from flask import Flask, render_template, request, redirect, send_from_directory, session, g
+from modules.users import user_module, get_current_user
+from modules.items import item_module
+import os
 import psycopg2
-import jinja2
 
 app = Flask(__name__)
+app.secret_key = os.urandom(12)
+# add your modules as blueprints here:
+app.register_blueprint(user_module)
+app.register_blueprint(item_module)
 
-@app.route("/save_update", methods=['GET','POST'])
-def save_update():
-    conn = psycopg2.connect(conn_string)
-    curr = conn.cursor()
-    curr.execute("UPDATE book SET book_id = %s,name = %s,price = %s, date_of_publication = %s",(request.form["bookid_updated"], request.form['book_name_updated'], float(request.form['price_updated']),request.form['dop_updated']))
-    conn.commit()
-    return redirect("/")
-@app.route("/update", methods=['GET','POST'])
-def update():
-    conn = psycopg2.connect(conn_string)
-    curr = conn.cursor()
-    curr.execute("SELECT * FROM book WHERE book_id=%s",(request.form["bookid"],));
-    for c in curr:
-        book_id, name, price, dop = c
-        print(name)
-    return render_template("update.jinja", book_id=book_id, name=name, price=price, dop=dop)
+
+@app.before_request
+def before_request():
+    if 'user' in session:
+        g.user = get_current_user()
+    else:
+        g.user = None
+
+
 @app.route("/")
 def index():
-    return render_template("index.jinja")
+    return redirect("/view_item")
+
+
+@app.route('/static/<path:path>')
+def send_js(path):
+    return send_from_directory('static', path)

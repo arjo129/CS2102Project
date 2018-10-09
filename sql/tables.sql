@@ -8,7 +8,8 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
 	email VARCHAR(50) CHECK(email LIKE '%@%.%'),
 	display_name VARCHAR(15) NOT NULL,
-	password VARCHAR(50) NOT NULL,
+	password VARCHAR(500) NOT NULL,
+	role VARCHAR(5) NOT NULL,
 	PRIMARY KEY (email)
 );
 
@@ -24,6 +25,8 @@ CREATE TABLE items (
 	name VARCHAR(20) NOT NULL,
 	owner VARCHAR(50),
 	location VARCHAR(100) NOT NULL,
+	latitude FLOAT,
+	longitude FLOAT,
 	description VARCHAR(255),
 	date_start DATE NOT NULL,
 	date_end DATE NOT NULL,

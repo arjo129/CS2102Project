@@ -1,0 +1,25 @@
+{% extends "layout.jinja2" %}
+{% block content %}
+    <div class="container" style="margin-top:10px;">
+    <div class="card">
+  <div class="card-body">
+      <p><h3>{{ display_name }}</h3></p>
+      <h6> <ol>
+      <p>Email: {{ email }}</p>
+      <p>Items loaning: </p>
+      <ul class="list-group list-group-flush">
+      {% for item in items %}
+        <li class="list-group-item">
+        {%  if view_bid %}
+             <a href="{{ url_for('item_module.view_bids', item=item[0]) }}">{{ item[1] }}</a>
+        {% else %}
+         <a href="{{ url_for('item_module.bid_item', owner=item[2], name=item[1], description=item[6] , item_id=item[0]) }}">{{ item[1] }}</a>
+
+        {%  endif %}
+        </li>
+      {% endfor %}
+      </ul>
+      </ol></h6>
+  </div></div>
+    </div>
+{% endblock %}
