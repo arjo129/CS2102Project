@@ -9,6 +9,11 @@
           We're sorry, we could not find the username or password in our records, please try again:
       </div>
       {% endif %}
+      {% if banned %}
+      <div class="alert alert-danger" role="alert">
+          This account has been banned.
+      </div>
+      {% endif %}
 
         <form method="post">
             <div class="form-group">

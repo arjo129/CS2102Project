@@ -4,6 +4,8 @@
     <div class="card">
   <div class="card-body">
       <p><h3>{{ display_name }}</h3></p>
+      {{ role }}
+      <br>
       <h6> <ol>
       <p>Email: {{ email }}</p>
       <p>Items loaning: </p>
@@ -19,6 +21,19 @@
         </li>
       {% endfor %}
       </ul>
+      <br>
+      {% if admin %}
+      <form method="post">
+          <label for="admin-controls">Admin Actions:</label>
+          <select class="form-control" name="admin-controls">
+              {% for option in admin_controls %}
+              <option>{{ option }}</option>
+              {% endfor %}
+          </select>
+          <br>
+          <button type="submit" class="btn btn-primary pull-right">Perform selected action</button>
+      </form>
+      {% endif %}
       </ol></h6>
   </div></div>
     </div>
