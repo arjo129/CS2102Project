@@ -39,10 +39,18 @@
             <label for="date_end">Ending date:</label>
             <input type="text" class="form-control" name="date_end" required>
             </div>
-
+            <label for="category_group">Categories:</label>
+          <div class="btn-group-toggle" data-toggle="buttons" name="category_group">
+          {% for category in categories %}
+              <label class="btn btn-secondary">
+                <input type="checkbox" autocomplete="off" name={{ category[0] }}> {{ category[0] }}
+              </label>
+          {% endfor %}
+          </div>
+            <br>
           <button type="submit" class="btn btn-primary pull-right">Loan out</button>
       </form>
-      
+
   </div></div>
     </div>
 {% endblock %}

@@ -1,11 +1,12 @@
 from flask import Blueprint, session, render_template, request, redirect, url_for, g
 from config import conn_string
+from modules.categories import view_category, Category
 import psycopg2
 
 
 class Item:
 
-    def __init__(self, item_id="", name="", owner="", location="", latitude="", longitude="", description="", date_start="", date_end=""):
+    def __init__(self, item_id="", name="", owner="", location="", latitude="", longitude="", description="", date_start="", date_end="", categories=[]):
         self.item_id = item_id
         self.name = name
         self.owner = owner
@@ -15,6 +16,7 @@ class Item:
         self.description = description
         self.date_start = date_start
         self.date_end = date_end
+        self.categories = categories
 
 
 def view_item():
@@ -27,6 +29,8 @@ def view_item():
 def add_item(item):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
+    for category in item.categories:
+        curr.execute("INSERT INTO item_belongs_to_category VALUES (%s, %s)", (item.item_id, category.name))
     curr.execute("INSERT INTO items VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                  (item.item_id, item.name, item.owner, item.location, item.latitude, item.longitude,
                   item.description, item.date_start, item.date_end))
@@ -50,7 +54,6 @@ def get_bids(item):
         bids.append({"user": bidder, "quantity": bid_amount})
     return bids
 
-
 def get_id():
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
@@ -58,7 +61,7 @@ def get_id():
     conn.commit()
     index = curr.fetchone()[0]
     if index:
-        return int(curr.fetchone[0])+1
+        return index+1
     else:
         return 0
 
@@ -116,13 +119,17 @@ def loan_item():
         description = request.form.get("description")
         date_start = request.form.get("date_start")
         date_end = request.form.get("date_end")
+        categories = []
+        for category in view_category():
+            if request.form.get(category[0]):
+                categories.append(Category(category[0]))
         item = Item(item_id=item_id, name=name, owner=owner, location=location, latitude=latitude, longitude=longitude, description=description,
-                    date_start=date_start, date_end=date_end)
+                    date_start=date_start, date_end=date_end, categories=categories)
 
         add_item(item)
         return redirect("/view_item")
     else:
-        return render_template("loan_item.jinja2")
+        return render_template("loan_item.jinja2", categories=view_category())
 
 
 @item_module.route("/view_bids", methods=['GET'])

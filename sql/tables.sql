@@ -9,12 +9,12 @@ CREATE TABLE users (
 	email VARCHAR(50) CHECK(email LIKE '%@%.%'),
 	display_name VARCHAR(15) NOT NULL,
 	password VARCHAR(500) NOT NULL,
-	role VARCHAR(5) NOT NULL,
+	role VARCHAR(6) NOT NULL,
 	PRIMARY KEY (email)
 );
 
 CREATE TABLE category (
-	name VARCHAR(20) PRIMARY KEY
+	name VARCHAR(20) PRIMARY KEY CHECK(name NOT LIKE '% %')
 );
 /*
 Merged with relation 'owns' due to (1, 1) participation constraint
