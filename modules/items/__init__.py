@@ -17,11 +17,11 @@ class Item:
         self.date_end = date_end
 
 
-def view_item():
+def view_item(itemId):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
-    curr.execute("SELECT * FROM items");
-    return curr
+    curr.execute("SELECT * FROM items where item_id=%s",  itemId)
+    return curr.fetchone()
 
 
 def add_item(item):
@@ -44,7 +44,8 @@ def bid_for(bidder, item_id, bid_amount):
 def get_bids(item):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
-    curr.execute("SELECT bidder, bid_amount FROM bid_for WHERE item_id=%s ORDER BY bid_amount DESC ", (item,))
+    curr.execute(
+        "SELECT bidder, bid_amount FROM bid_for WHERE item_id=%s ORDER BY bid_amount DESC ", (item,))
     bids = []
     for bidder, bid_amount in curr:
         bids.append({"user": bidder, "quantity": bid_amount})
@@ -58,7 +59,7 @@ def get_id():
     conn.commit()
     index = curr.fetchone()[0]
     if index:
-        return int(curr.fetchone[0])+1
+        return int(curr.fetchone()[0])+1
     else:
         return 0
 
@@ -66,16 +67,16 @@ def get_id():
 item_module = Blueprint('item_module', __name__, template_folder='templates')
 
 
-@item_module.route("/view_item", methods=['GET', 'POST'])
-def view_page():
+@item_module.route("/view_item/<itemId>", methods=['GET', 'POST'])
+def view_page(itemId):
     if request.method == 'GET':
-        items = view_item()
-        return render_template("view_item.jinja2", items=items)
+        item = view_item(itemId)
+        return render_template("view_item.jinja2", item=item)
 
     if request.method == 'POST':
         item = request.form.get("item_entry")
         if item == None:
-            return redirect("/view_item")
+            return redirect("/view_item/<itemId>")
         item_id, name, owner, description = item.split()
         print(name)
         return redirect(url_for('.bid_item', item_id=item_id, name=name, owner=owner, description=description))
@@ -92,16 +93,16 @@ def bid_item():
     item_id = request.args.get("item_id")
     if request.method == 'GET':
         return render_template("bid_item.jinja2", name=name, owner=owner, description=description, item_id=item_id)
-    
+
     if request.method == 'POST':
         value = request.form.get("bid_value")
         bidder = g.user.email
         item_id = request.args.get("item_id")
         bid_for(item_id, bidder, value)
-        return redirect("/view_item")
+        return redirect("/view_item/{}".format(item_id))
 
 
-@item_module.route("/loan_item", methods=['GET','POST'])
+@item_module.route("/loan_item", methods=['GET', 'POST'])
 def loan_item():
     if g.user == None:
         return redirect("/login")
@@ -120,7 +121,7 @@ def loan_item():
                     date_start=date_start, date_end=date_end)
 
         add_item(item)
-        return redirect("/view_item")
+        return redirect("/view_item/{}".format(item_id))
     else:
         return render_template("loan_item.jinja2")
 
@@ -130,4 +131,3 @@ def view_bids():
     item = request.args.get('item')
     bids = get_bids(item)
     return render_template("view_bids.jinja2", bids=bids)
-
