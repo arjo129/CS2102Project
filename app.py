@@ -12,6 +12,18 @@ app.register_blueprint(user_module)
 app.register_blueprint(item_module)
 
 
+def getItems():
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute(
+        "SELECT * FROM items ")
+    items = []
+    for item in curr:
+        items.append({"id": item[0], "name": item[1], "owner": item[2],
+                      "location": item[3], "description": item[6]})
+    return items
+
+
 @app.before_request
 def before_request():
     if 'user' in session:
@@ -22,7 +34,7 @@ def before_request():
 
 @app.route("/")
 def index():
-    return redirect("/view_item")
+    return render_template("index.jinja2", items=getItems())
 
 
 @app.route('/static/<path:path>')
