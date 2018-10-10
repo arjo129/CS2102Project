@@ -19,10 +19,10 @@ class Item:
         self.categories = categories
 
 
-def view_item(itemId):
+def view_item(item_id):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
-    curr.execute("SELECT * FROM items where item_id=%s",  itemId)
+    curr.execute("SELECT * FROM items where item_id=%s",  (item_id,))
     return curr.fetchone()
 
 
@@ -59,11 +59,14 @@ def get_id():
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
     curr.execute("SELECT MAX(item_id) FROM items")
-    conn.commit()
-    index = curr.fetchone()[0]
-    if index:
-        return index+1
+    index = None
+    for c in curr:
+        index = c
+    if index is not None:
+        print("Found old index")
+        return index[0]+1
     else:
+        print("returning old index")
         return 0
 
 
@@ -87,7 +90,7 @@ def view_page(itemId):
 
 @item_module.route("/bid_item", methods=['GET', 'POST'])
 def bid_item():
-    if g.user == None:
+    if g.user is None:
         return redirect("/login")
 
     name = request.args.get("name")
@@ -112,6 +115,7 @@ def loan_item():
 
     elif request.method == 'POST':
         item_id = get_id()
+        print(item_id)
         owner = g.user.email
         name = request.form.get("name")
         location = request.form.get("location")

@@ -15,6 +15,22 @@ def view_category():
     curr.execute("SELECT * FROM category")
     return curr
 
+def view_subcategory(subcategory):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SELECT ic.item_id FROM item_belongs_to_category ic WHERE ic.category = %s", (subcategory,))
+    # list of item ids that belong to subcategory
+    if curr.fetchall is None:
+        return []
+    else:
+        item_ids = [i[0] for i in curr.fetchall()]
+        format_strings = ','.join(['%s'] * len(item_ids))
+        curr_2 = conn.cursor()
+        curr_2.execute("SELECT * FROM items i WHERE i.item_id IN (%s)" % format_strings,
+                tuple(item_ids))
+        return curr_2
+
+
 
 def add_category(category):
     conn = psycopg2.connect(conn_string)
@@ -41,6 +57,11 @@ def view_page():
         categories = view_category()
         return render_template("view_category.jinja2", categories=categories, admin=admin)
 
+@category_module.route("/view_subcategory", methods=['GET', 'POST'])
+def view_subcategory_page():
+    subcategory = request.args.get("subcategory")
+    items = view_subcategory(subcategory)
+    return render_template("view_subcategory.jinja2", items=items, subcategory=subcategory)
 
 @category_module.route("/create_category", methods=['GET', 'POST'])
 def create_category():
@@ -55,3 +76,6 @@ def create_category():
         return redirect(url_for('.view_page'))
     else:
         return render_template("create_category.jinja2", admin=True)
+
+
+        
