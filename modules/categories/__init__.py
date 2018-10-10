@@ -15,21 +15,21 @@ def view_category():
     curr.execute("SELECT * FROM category")
     return curr
 
+
 def view_subcategory(subcategory):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
     curr.execute("SELECT ic.item_id FROM item_belongs_to_category ic WHERE ic.category = %s", (subcategory,))
     # list of item ids that belong to subcategory
-    if curr.fetchall is None:
+    items_in_category = curr.fetchall()
+    if not items_in_category:
         return []
-    else:
-        item_ids = [i[0] for i in curr.fetchall()]
-        format_strings = ','.join(['%s'] * len(item_ids))
-        curr_2 = conn.cursor()
-        curr_2.execute("SELECT * FROM items i WHERE i.item_id IN (%s)" % format_strings,
-                tuple(item_ids))
-        return curr_2
-
+    item_ids = [i[0] for i in items_in_category]
+    format_strings = ','.join(['%s'] * len(item_ids))
+    curr_2 = conn.cursor()
+    curr_2.execute("SELECT * FROM items i WHERE i.item_id IN (%s)" % format_strings,
+            tuple(item_ids))
+    return curr_2
 
 
 def add_category(category):
