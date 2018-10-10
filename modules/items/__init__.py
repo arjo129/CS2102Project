@@ -90,7 +90,7 @@ def view_page(itemId):
 
 @item_module.route("/bid_item", methods=['GET', 'POST'])
 def bid_item():
-    if g.user == None:
+    if g.user is None:
         return redirect("/login")
 
     name = request.args.get("name")

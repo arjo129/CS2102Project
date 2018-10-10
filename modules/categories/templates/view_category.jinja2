@@ -14,7 +14,8 @@
         <ul>
         {% for category in categories %}
           <p>
-              <a style="color:black;">{{ category[0] }}</a></p>
+              <a style="color:black;">{{ category[0] }}</a>
+              <a class="btn btn-primary" href="{{ url_for('category_module.view_subcategory_page', subcategory=category[0]) }}" role="button">View items</a></p>
         {% endfor %}
         </ul>
 
