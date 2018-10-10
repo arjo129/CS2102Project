@@ -19,12 +19,15 @@ def getItems(searchParams=None):
     curr = conn.cursor()
     if searchParams != None:
         curr.execute(
-            "SELECT * FROM items WHERE LOWER(name) LIKE LOWER(%s) OR LOWER(owner) LIKE LOWER(%s) OR LOWER(location) LIKE LOWER(%s)",
+            "SELECT i.item_id, i.name, u.display_name, i.location "
+            "FROM items i, users u "
+            "WHERE i.owner = u.email AND "
+            "LOWER(i.name) LIKE LOWER(%s) OR LOWER(i.owner) LIKE LOWER(%s) OR LOWER(i.location) LIKE LOWER(%s)",
             ('%'+searchParams+'%',
              '%'+searchParams+'%', '%'+searchParams+'%')
         )
     else:
-        curr.execute("SELECT * FROM items")
+        curr.execute("SELECT i.item_id, i.name, u.display_name, i.location FROM items i, users u WHERE i.owner = u.email")
     items = []
     for item in curr:
         items.append({"id": item[0], "name": item[1], "owner": item[2],

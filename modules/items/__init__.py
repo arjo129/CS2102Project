@@ -59,15 +59,12 @@ def get_id():
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
     curr.execute("SELECT MAX(item_id) FROM items")
-    index = None
-    for c in curr:
-        index = c
-    if index is not None:
-        print("Found old index")
-        return index[0]+1
+    conn.commit()
+    index = curr.fetchone()[0]
+    if index:
+        return index + 1
     else:
-        print("returning old index")
-        return 0
+        return 1
 
 
 item_module = Blueprint('item_module', __name__, template_folder='templates')
@@ -84,7 +81,6 @@ def view_page(itemId):
         if item == None:
             return redirect("/view_item/<itemId>")
         item_id, name, owner, description = item.split()
-        print(name)
         return redirect(url_for('.bid_item', item_id=item_id, name=name, owner=owner, description=description))
 
 
@@ -115,7 +111,6 @@ def loan_item():
 
     elif request.method == 'POST':
         item_id = get_id()
-        print(item_id)
         owner = g.user.email
         name = request.form.get("name")
         location = request.form.get("location")
