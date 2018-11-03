@@ -88,15 +88,15 @@ BEGIN
 	RETURN NEW;
 END
 IF;
+RAISE EXCEPTION 'Each item must have at least one category';
 RETURN NULL;
 END; $$ LANGUAGE PLPGSQL;
 
-CREATE CONSTRAINT TRIGGER check_item_at_least_one_category_table_item
-AFTER 
+CREATE TRIGGER check_item_at_least_one_category_table_item
+BEFORE 
 INSERT OR
 UPDATE
 ON items
-DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW
 	EXECUTE PROCEDURE check_item_at_least_one_category_table_item
 	();
@@ -111,14 +111,14 @@ RETURNS TRIGGER AS $$
 		RETURN NEW;
 	END
 	IF;
+RAISE EXCEPTION 'Each item must have at least one category';
 RETURN NULL;
 	END; $$ LANGUAGE PLPGSQL;
 
-CREATE CONSTRAINT TRIGGER check_item_at_least_one_category_table_belongs_to_update
-AFTER
+CREATE TRIGGER check_item_at_least_one_category_table_belongs_to_update
+BEFORE
 	UPDATE
 ON item_belongs_to_category
-DEFERRABLE INITIALLY DEFERRED
 FOR EACH ROW
 	EXECUTE PROCEDURE check_item_at_least_one_category_table_belongs_to_update
 	();
@@ -133,11 +133,12 @@ RETURNS TRIGGER AS $$
 		RETURN OLD;
 	END
 	IF;
+RAISE EXCEPTION 'Each item must have at least one category';
 RETURN NULL;
 END; $$ LANGUAGE PLPGSQL;
 
 CREATE TRIGGER check_item_at_least_one_category_table_belongs_to_delete
-BEFORE
+AFTER
 	DELETE
 ON item_belongs_to_category
 FOR EACH
