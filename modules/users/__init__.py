@@ -168,3 +168,7 @@ def log_out():
     if get_current_user():
         del session['user']
     return redirect("/")
+
+@user_module.route("/reset_password", methods=['GET'])
+def reset_password():
+    return render_template("reset.jinja2")
