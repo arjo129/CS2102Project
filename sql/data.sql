@@ -24,10 +24,171 @@ INSERT INTO users VALUES ('rajesh@fake.com', 'sheshraj', '$2b$12$XJZc5rNoknRCIOW
 INSERT INTO users VALUES ('nozomi@yahoo.co.jp', 'nozomi', '$2b$12$7dNdOrXaGgS9Xma9BZdM0em6ZEAjOVNkqHexZUZtM.4ufgkb8FhLe', 'user');
 
 --
+-- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO category VALUES ('Furniture');
+INSERT INTO category VALUES ('Transport');
+INSERT INTO category VALUES ('Books');
+INSERT INTO category VALUES ('School-related Items');
+INSERT INTO category VALUES ('Sports Equipment');
+INSERT INTO category VALUES ('Electronics');
+INSERT INTO category VALUES ('Musical Instruments');
+INSERT INTO category VALUES ('Photography');
+INSERT INTO category VALUES ('Outdoor Equipment');
+
+
+--
+-- Data for Name: forgot_password; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+
+
+--
+-- Data for Name: item_belongs_to_category; Type: TABLE DATA; Schema: public; Owner: postgres
+--
+
+INSERT INTO item_belongs_to_category VALUES (1, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (2, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (3, 'Musical Instruments');
+INSERT INTO item_belongs_to_category VALUES (4, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (5, 'Books');
+INSERT INTO item_belongs_to_category VALUES (5, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (6, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (7, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (7, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (7, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (8, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (9, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (10, 'Books');
+INSERT INTO item_belongs_to_category VALUES (10, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (11, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (12, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (12, 'Books');
+INSERT INTO item_belongs_to_category VALUES (13, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (14, 'Transport');
+INSERT INTO item_belongs_to_category VALUES (15, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (15, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (16, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (17, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (18, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (18, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (19, 'Books');
+INSERT INTO item_belongs_to_category VALUES (19, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (20, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (21, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (22, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (23, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (24, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (25, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (26, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (27, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (28, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (29, 'Books');
+INSERT INTO item_belongs_to_category VALUES (29, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (30, 'Transport');
+INSERT INTO item_belongs_to_category VALUES (30, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (31, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (32, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (33, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (33, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (34, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (34, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (35, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (36, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (37, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (38, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (39, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (40, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (41, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (42, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (43, 'Books');
+INSERT INTO item_belongs_to_category VALUES (44, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (45, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (46, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (46, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (47, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (48, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (49, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (50, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (51, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (52, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (53, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (54, 'Transport');
+INSERT INTO item_belongs_to_category VALUES (55, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (56, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (57, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (58, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (59, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (59, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (60, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (61, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (62, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (62, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (63, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (63, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (64, 'Outdoor Equipment');
+INSERT INTO item_belongs_to_category VALUES (65, 'Books');
+INSERT INTO item_belongs_to_category VALUES (65, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (66, 'Books');
+INSERT INTO item_belongs_to_category VALUES (66, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (67, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (68, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (69, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (70, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (71, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (71, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (72, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (72, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (72, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (73, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (73, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (73, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (74, 'Transport');
+INSERT INTO item_belongs_to_category VALUES (75, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (75, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (76, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (77, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (78, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (79, 'Transport');
+INSERT INTO item_belongs_to_category VALUES (80, 'Books');
+INSERT INTO item_belongs_to_category VALUES (81, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (81, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (82, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (82, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (83, 'Transport');
+INSERT INTO item_belongs_to_category VALUES (83, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (84, 'Books');
+INSERT INTO item_belongs_to_category VALUES (84, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (85, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (85, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (86, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (87, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (88, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (89, 'Books');
+INSERT INTO item_belongs_to_category VALUES (89, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (90, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (90, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (91, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (92, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (93, 'Transport');
+INSERT INTO item_belongs_to_category VALUES (93, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (94, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (95, 'Photography');
+INSERT INTO item_belongs_to_category VALUES (96, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (96, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (97, 'Transport');
+INSERT INTO item_belongs_to_category VALUES (97, 'Sports Equipment');
+INSERT INTO item_belongs_to_category VALUES (98, 'Electronics');
+INSERT INTO item_belongs_to_category VALUES (99, 'Books');
+INSERT INTO item_belongs_to_category VALUES (99, 'School-related Items');
+INSERT INTO item_belongs_to_category VALUES (100, 'Furniture');
+INSERT INTO item_belongs_to_category VALUES (101, 'Electronics');
+
+--
 -- Data for Name: items; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO items VALUES (0, 'Chicken Rice', 'bob@gmail.com', 'NUS, Singapore', 103.29000000000001, 1, 'Tasty chicken rice which you must return', '2018-11-01', '2018-12-03');
 INSERT INTO items VALUES (1, 'Wooden Desk', 'arjo@u.nus.edu', 'Hougang, Singapore', 103.98999999999999, 2.9990000000000001, 'A small wooden desk', '2018-11-01', '2018-12-03');
 INSERT INTO items VALUES (2, 'Go Pro Hero 5', 'arjo@u.nus.edu', 'Bishan, Singapore', 103.98999999999999, 2.9900000000000002, 'A high quality go pro. Water proof. Pls dont take diving.', '2018-12-01', '2018-12-03');
 INSERT INTO items VALUES (3, 'French Horn', 'arjo@u.nus.edu', 'Hougang, Singapore', 102.98999999999999, 2.9900000000000002, 'A french horn. ', '2018-12-01', '2018-12-03');
@@ -131,149 +292,12 @@ INSERT INTO items VALUES (100, 'Barbeque Pit', 'nozomi@yahoo.co.jp', 'NUS, Singa
 INSERT INTO items VALUES (101, 'Loadspeaker', 'nozomi@yahoo.co.jp', 'NUS, Singapore', 103.98999999999999, 102.98999999999999, 'A loud speaker with portable battery', '2018-11-01', '2019-01-16');
 
 
---
--- Data for Name: category; Type: TABLE DATA; Schema: public; Owner: postgres
---
 
-INSERT INTO category VALUES ('furniture');
-INSERT INTO category VALUES ('transport');
-INSERT INTO category VALUES ('books');
-INSERT INTO category VALUES ('studyitems');
-INSERT INTO category VALUES ('sports');
-INSERT INTO category VALUES ('electronics');
-INSERT INTO category VALUES ('musical instruments');
-INSERT INTO category VALUES ('photography');
-INSERT INTO category VALUES ('camping and outdoors');
-
-
---
--- Data for Name: forgot_password; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-
-
---
--- Data for Name: item_belongs_to_category; Type: TABLE DATA; Schema: public; Owner: postgres
---
-
-INSERT INTO item_belongs_to_category VALUES (1, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (2, 'sports');
-INSERT INTO item_belongs_to_category VALUES (4, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (5, 'books');
-INSERT INTO item_belongs_to_category VALUES (5, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (6, 'photography');
-INSERT INTO item_belongs_to_category VALUES (7, 'sports');
-INSERT INTO item_belongs_to_category VALUES (7, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (7, 'photography');
-INSERT INTO item_belongs_to_category VALUES (10, 'books');
-INSERT INTO item_belongs_to_category VALUES (10, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (14, 'transport');
-INSERT INTO item_belongs_to_category VALUES (15, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (15, 'photography');
-INSERT INTO item_belongs_to_category VALUES (16, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (17, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (18, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (18, 'photography');
-INSERT INTO item_belongs_to_category VALUES (19, 'books');
-INSERT INTO item_belongs_to_category VALUES (19, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (20, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (21, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (22, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (23, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (24, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (25, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (26, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (27, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (29, 'books');
-INSERT INTO item_belongs_to_category VALUES (29, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (30, 'transport');
-INSERT INTO item_belongs_to_category VALUES (30, 'sports');
-INSERT INTO item_belongs_to_category VALUES (31, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (32, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (33, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (33, 'photography');
-INSERT INTO item_belongs_to_category VALUES (34, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (34, 'photography');
-INSERT INTO item_belongs_to_category VALUES (40, 'photography');
-INSERT INTO item_belongs_to_category VALUES (41, 'photography');
-INSERT INTO item_belongs_to_category VALUES (42, 'photography');
-INSERT INTO item_belongs_to_category VALUES (43, 'books');
-INSERT INTO item_belongs_to_category VALUES (44, 'photography');
-INSERT INTO item_belongs_to_category VALUES (45, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (46, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (46, 'sports');
-INSERT INTO item_belongs_to_category VALUES (47, 'sports');
-INSERT INTO item_belongs_to_category VALUES (48, 'photography');
-INSERT INTO item_belongs_to_category VALUES (49, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (50, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (51, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (52, 'photography');
-INSERT INTO item_belongs_to_category VALUES (54, 'transport');
-INSERT INTO item_belongs_to_category VALUES (55, 'sports');
-INSERT INTO item_belongs_to_category VALUES (57, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (59, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (59, 'photography');
-INSERT INTO item_belongs_to_category VALUES (60, 'photography');
-INSERT INTO item_belongs_to_category VALUES (61, 'photography');
-INSERT INTO item_belongs_to_category VALUES (62, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (62, 'photography');
-INSERT INTO item_belongs_to_category VALUES (63, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (63, 'photography');
-INSERT INTO item_belongs_to_category VALUES (65, 'books');
-INSERT INTO item_belongs_to_category VALUES (65, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (67, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (68, 'sports');
-INSERT INTO item_belongs_to_category VALUES (69, 'sports');
-INSERT INTO item_belongs_to_category VALUES (70, 'sports');
-INSERT INTO item_belongs_to_category VALUES (71, 'sports');
-INSERT INTO item_belongs_to_category VALUES (71, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (72, 'sports');
-INSERT INTO item_belongs_to_category VALUES (72, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (72, 'photography');
-INSERT INTO item_belongs_to_category VALUES (73, 'sports');
-INSERT INTO item_belongs_to_category VALUES (73, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (73, 'photography');
-INSERT INTO item_belongs_to_category VALUES (75, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (75, 'photography');
-INSERT INTO item_belongs_to_category VALUES (76, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (77, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (78, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (79, 'transport');
-INSERT INTO item_belongs_to_category VALUES (80, 'books');
-INSERT INTO item_belongs_to_category VALUES (81, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (81, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (82, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (82, 'sports');
-INSERT INTO item_belongs_to_category VALUES (83, 'transport');
-INSERT INTO item_belongs_to_category VALUES (83, 'sports');
-INSERT INTO item_belongs_to_category VALUES (84, 'books');
-INSERT INTO item_belongs_to_category VALUES (84, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (85, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (85, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (86, 'photography');
-INSERT INTO item_belongs_to_category VALUES (87, 'photography');
-INSERT INTO item_belongs_to_category VALUES (88, 'photography');
-INSERT INTO item_belongs_to_category VALUES (89, 'books');
-INSERT INTO item_belongs_to_category VALUES (89, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (90, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (90, 'photography');
-INSERT INTO item_belongs_to_category VALUES (92, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (93, 'transport');
-INSERT INTO item_belongs_to_category VALUES (93, 'sports');
-INSERT INTO item_belongs_to_category VALUES (94, 'photography');
-INSERT INTO item_belongs_to_category VALUES (97, 'transport');
-INSERT INTO item_belongs_to_category VALUES (97, 'sports');
-INSERT INTO item_belongs_to_category VALUES (98, 'electronics');
-INSERT INTO item_belongs_to_category VALUES (99, 'books');
-INSERT INTO item_belongs_to_category VALUES (99, 'studyitems');
-INSERT INTO item_belongs_to_category VALUES (100, 'furniture');
-INSERT INTO item_belongs_to_category VALUES (101, 'electronics');
 
 --
 -- Data for Name: bid_for; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO bid_for VALUES ('bob@gmail.com', 0, 100.00);
 INSERT INTO bid_for VALUES ('nozomi@yahoo.co.jp', 2, 20.00);
 INSERT INTO bid_for VALUES ('bob@gmail.com', 2, 100.00);
 
