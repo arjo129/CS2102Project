@@ -9,8 +9,18 @@
             <a href="{{ url_for('item_module.bid_item', owner=item[2], name=item[1], description=item[3], item_id=item[0]) }}" style="color:black;">Name: {{ item[1] }}</a>
             <br> Owner: <a href="{{ url_for('user_module.user_profile', owner=item[2]) }}">{{ item[4] }} </a> <br> Description: {{ item[3] }} <br></p>
         <p>
-            {% if current_bid %}
-            Current bid: {{ current_bid[2] }} by <a href="{{ url_for('user_module.user_profile', owner=current_bid[1]) }}">{{ current_bid[0] }} </a>
+            {% if highest_bids and lowest_bids and average_bid %}
+                Highest bid(s):
+                {% for bid in highest_bids %}
+                    <br> {{ bid[2] }} by <a href="{{ url_for('user_module.user_profile', owner=bid[1]) }}">{{ bid[0] }} </a>
+                {% endfor %}
+                <br>
+                Lowest bid(s):
+                {% for bid in lowest_bids %}
+                    <br> {{ bid[2] }} by <a href="{{ url_for('user_module.user_profile', owner=bid[1]) }}">{{ bid[0] }} </a>
+                {% endfor %}
+                <br>
+                Average bid: {{ average_bid }}
             {% else %}
             There are currently no bids for this item.
             {% endif %}
