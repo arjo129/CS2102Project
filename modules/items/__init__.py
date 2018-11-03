@@ -23,7 +23,8 @@ class Item:
 def view_item(item_id):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
-    curr.execute("SELECT * FROM items where item_id=%s",  (item_id,))
+    curr.execute("SELECT i.item_id, i.name, i.owner, i.description, u.display_name FROM items i, users u "
+                 "WHERE i.item_id=%s AND i.owner = u.email",  (item_id,))
     return curr.fetchone()
 
 
@@ -56,6 +57,16 @@ def get_bids(item):
         bids.append({"user": bidder, "quantity": bid_amount})
     return bids
 
+def get_current_bid(item):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute(
+        "SELECT u.display_name, b.bidder, b.bid_amount FROM bid_for b INNER JOIN users u "
+        "ON b.bidder = u.email AND b.item_id=%s AND b.bid_amount >= "
+        "ALL(SELECT bid_amount FROM bid_for WHERE item_id=%s)", (item, item))
+    bid = curr.fetchone()
+    return bid
+
 def get_id():
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
@@ -75,7 +86,7 @@ item_module = Blueprint('item_module', __name__, template_folder='templates')
 def view_page(itemId):
     if request.method == 'GET':
         item = view_item(itemId)
-        return render_template("view_item.jinja2", item=item)
+        return render_template("view_item.jinja2", item=item, current_bid=get_current_bid(itemId))
 
     if request.method == 'POST':
         item = request.form.get("item_entry")
