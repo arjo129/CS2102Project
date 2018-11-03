@@ -1,6 +1,7 @@
 from flask import Blueprint, session, render_template, request, redirect, url_for, g
 from config import conn_string
 from modules.categories import view_category, Category
+from urllib import parse
 import psycopg2
 
 
@@ -120,16 +121,17 @@ def loan_item():
         date_start = request.form.get("date_start")
         date_end = request.form.get("date_end")
         categories = []
-        for category in view_category():
-            if request.form.get(category[0]):
-                categories.append(Category(category[0]))
+        for category in map(lambda cat : cat[0], view_category()):
+            if request.form.get(parse.quote(category)):
+                categories.append(Category(category))
         item = Item(item_id=item_id, name=name, owner=owner, location=location, latitude=latitude, longitude=longitude, description=description,
                     date_start=date_start, date_end=date_end, categories=categories)
 
         add_item(item)
         return redirect("/view_item/{}".format(item_id))
     else:
-        return render_template("loan_item.jinja2", categories=view_category())
+        categories = map(lambda cat: (cat[0], parse.quote(cat[0])), view_category())
+        return render_template("loan_item.jinja2", categories=categories)
 
 
 @item_module.route("/view_bids", methods=['GET'])
