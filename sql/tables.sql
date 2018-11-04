@@ -61,7 +61,8 @@ CREATE TABLE bid_for
 (
 	bidder VARCHAR(50),
 	item_id INTEGER,
-	bid_amount NUMERIC(8, 2),
+	bid_amount NUMERIC(8, 2) CHECK (bid_amount > 0),
+	selected VARCHAR(50) CHECK (selected = 'selected' or selected = 'unknown' or selected = 'rejected'),
 	PRIMARY KEY (bidder, item_id),
 	FOREIGN KEY (bidder) REFERENCES users(email) ON DELETE CASCADE,
 	FOREIGN KEY (item_id) REFERENCES items(item_id)
@@ -145,3 +146,4 @@ FOR EACH
 	ROW
 	EXECUTE PROCEDURE check_item_at_least_one_category_table_belongs_to_delete
 	();
+-- Owner of item cannot bid for own item

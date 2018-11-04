@@ -298,8 +298,8 @@ INSERT INTO items VALUES (101, 'Loadspeaker', 'nozomi@yahoo.co.jp', 'NUS, Singap
 -- Data for Name: bid_for; Type: TABLE DATA; Schema: public; Owner: postgres
 --
 
-INSERT INTO bid_for VALUES ('nozomi@yahoo.co.jp', 2, 20.00);
-INSERT INTO bid_for VALUES ('bob@gmail.com', 2, 100.00);
+INSERT INTO bid_for VALUES ('nozomi@yahoo.co.jp', 2, 20.00, 'unknown');
+INSERT INTO bid_for VALUES ('bob@gmail.com', 2, 100.00, 'unknown');
 
 
 
