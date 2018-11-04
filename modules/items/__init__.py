@@ -37,6 +37,17 @@ def view_item(item_id):
     return curr.fetchone()
 
 
+def view_other_related_items(item_id):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SELECT DISTINCT i.item_id, i.name, u.display_name, i.location FROM bid_for b "
+                 "INNER JOIN bid_for b2 ON b.bidder = b2.bidder AND b2.item_id <> b.item_id AND b.item_id = %s"
+                 "INNER JOIN items i ON i.item_id = b2.item_id "
+				 "INNER JOIN users u ON u.email = b2.bidder "
+                 "ORDER BY i.item_id DESC",  (item_id,))
+    return curr.fetchall()
+
+
 def add_item(item):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
@@ -161,16 +172,17 @@ item_module = Blueprint('item_module', __name__, template_folder='templates')
 @item_module.route("/view_item/<item_id>", methods=['GET', 'POST'])
 def view_page(item_id):
     if request.method == 'GET':
-        item = view_item(itemId)
+        item = view_item(item_id)
         bid_placed = False
         if g.user and check_if_user_has_bid(get_current_user().email, item_id):
             bid_placed = True
-        return render_template("view_item.jinja2", item=item, highest_bids=get_highest_bids(itemId),
-                               lowest_bids=get_lowest_bids(itemId), average_bid=get_average_bid(itemId), bid_placed=bid_placed)
+        return render_template("view_item.jinja2", item=item, highest_bids=get_highest_bids(item_id),
+                               lowest_bids=get_lowest_bids(item_id), average_bid=get_average_bid(item_id),
+                               bid_placed=bid_placed, related_items=view_other_related_items(item_id))
     if request.method == 'POST':
         item = request.form.get("item_entry")
         if item == None:
-            return redirect("/view_item/<itemId>")
+            return redirect("/view_item/<item_id>")
         item_id, name, owner, description = item.split()
         return redirect(url_for('.bid_item', item_id=item_id, name=name, owner=owner, description=description))
 
