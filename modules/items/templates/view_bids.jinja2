@@ -17,7 +17,7 @@
     <tr>
       <td>{{ bid.user }}</td>
       <td>{{ bid.quantity }}</td>
-        <td><a href="accept_bid?bidder={{ bid.user }}&item={{ item }}"><button class="btn">Accept Bid</button></a></td>
+        <td><a href="/accept_bid?bidder={{ bid.user }}&item={{ item }}"><button class="btn">Accept Bid</button></a></td>
     </tr>
   {% endfor %}
   </tbody>

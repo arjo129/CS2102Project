@@ -20,6 +20,14 @@ class Item:
         self.categories = categories
 
 
+def get_owner(item_id):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SELECT owner FROM items where item_id=%s", (item_id,))
+    (owner,)= curr.fetchone()
+    return owner
+
+
 def view_item(item_id):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
@@ -52,6 +60,17 @@ def update_bid(item_id, bidder, value):
     curr.execute("UPDATE bid_for SET bid_amount = %s WHERE bidder = %s AND item_id = %s",
                  (value, bidder, item_id))
     conn.commit()
+
+
+def accept_bid(item_id, bidder):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("UPDATE bid_for SET selected ='selected' WHERE bidder = %s AND item_id = %s",
+                 (bidder, item_id))
+    curr.execute("UPDATE bid_for SET selected ='rejected' WHERE bidder != %s AND item_id = %s",
+                 (bidder, item_id))
+    conn.commit()
+
 
 def get_bids(item):
     conn = psycopg2.connect(conn_string)
@@ -201,7 +220,18 @@ def view_bids():
 
 @item_module.route("/my_bids", methods=['GET'])
 def my_bids():
-    if g.user == None:
+    if g.user is None:
         return redirect("/login")
     user = get_current_user()
     return render_template("my_bids.jinja2", bids=get_bids_by_user(user.email))
+
+@item_module.route("/accept_bid", methods=['GET'])
+def accept():
+    if g.user is None:
+        return redirect("/login")
+    item = request.args.get("item")
+    bidder = request.args.get("bidder")
+    if get_owner(item) != g.user.email:
+        return "G3T 0UT H4x0r!!"
+    accept_bid(item, bidder)
+    return redirect("/")
