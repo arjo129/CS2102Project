@@ -178,7 +178,8 @@ def view_page(item_id):
             bid_placed = True
         return render_template("view_item.jinja2", item=item, highest_bids=get_highest_bids(item_id),
                                lowest_bids=get_lowest_bids(item_id), average_bid=get_average_bid(item_id),
-                               bid_placed=bid_placed, related_items=view_other_related_items(item_id))
+                               bid_placed=bid_placed, related_items=view_other_related_items(item_id),
+                               can_bid=g.user and g.user.email != item[2])
     if request.method == 'POST':
         item = request.form.get("item_entry")
         if item == None:

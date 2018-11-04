@@ -25,13 +25,15 @@
             There are currently no bids for this item.
             {% endif %}
         </p>
+        {% if can_bid %}
         <a class="btn btn-primary" href="{{ url_for('item_module.bid_item', name=item[1], owner=item[2], description=item[6], item_id=item[0]) }}" role="button">
                 {% if bid_placed %}
-                Update bid
+                    Update bid
                 {% else %}
-                Interested
+                    Interested
                 {% endif %}
-            </a>
+        </a>
+        {% endif %}
         <br><br>
         <h4>Bidders have also bid for:</h4>
         <p>
