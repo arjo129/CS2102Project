@@ -12,7 +12,6 @@
   </head>
   <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">Navbar</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -20,12 +19,43 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
       </li>
-      <li class="nav-item">
-        <a class="nav-link" href="#">Link</a>
+      <li class="nav-item active">
+        <a class="nav-link" href="/view_category">Categories <span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+    <ul class="navbar-nav ml-auto">
+      <li class="nav-item active">
+        {% if not g.user %}
+          <a class="nav-link" href="/login">Log In</a>
+        {% endif %}
+      </li>
+
+      <li class="nav-item active">
+        {% if not g.user %}
+          <a class="nav-link" href="/signup">Sign Up</a>
+        {% endif %}
+      </li>
+      <li class="nav-item active">
+        {% if g.user %}
+          <a class="nav-link" href="/loan_item">Loan out!</a>
+        {% endif %}
       </li>
       <li class="nav-item dropdown">
+        {% if g.user %}
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            {{ g.user.display_name }}
+          </a>
+          <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+            <a class="dropdown-item" href="{{ url_for('user_module.user_profile', owner=g.user.email) }}">Profile</a>
+              <a class="dropdown-item" href="{{ url_for('item_module.my_bids', owner=g.user.email) }}">My bids</a>
+            <a class="dropdown-item" href="/logout">Log out</a>
+          </div>
+        {% endif %}
+      </li>
+
+      <!-- <li class="nav-item dropdown">
         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
           Dropdown
         </a>
@@ -38,7 +68,7 @@
       </li>
       <li class="nav-item">
         <a class="nav-link disabled" href="#">Disabled</a>
-      </li>
+      </li> -->
     </ul>
   </div>
 </nav>
@@ -46,7 +76,7 @@
     <div class="content" style="margin-top:10px;">{% block content %}{% endblock %}</div>
     <div id="footer">
       {% block footer %}
-      &copy; Copyright 2018 by <a href="http://domain.invalid/">CS2102 Group 39</a>.
+      &copy; Done by <a href="https://github.com/arjo129/CS2102Project">Group 39</a> in AY2018/19 S1.
       {% endblock %}
     </div>
   </body>

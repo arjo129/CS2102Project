@@ -169,6 +169,7 @@ def log_out():
         del session['user']
     return redirect("/")
 
+
 @user_module.route("/reset_password", methods=['GET'])
 def reset_password():
     return render_template("reset.jinja2")

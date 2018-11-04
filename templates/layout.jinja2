@@ -49,6 +49,7 @@
           </a>
           <div class="dropdown-menu" aria-labelledby="navbarDropdown">
             <a class="dropdown-item" href="{{ url_for('user_module.user_profile', owner=g.user.email) }}">Profile</a>
+              <a class="dropdown-item" href="{{ url_for('item_module.my_bids', owner=g.user.email) }}">My bids</a>
             <a class="dropdown-item" href="/logout">Log out</a>
           </div>
         {% endif %}

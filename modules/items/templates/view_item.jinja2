@@ -8,7 +8,14 @@
         <p>
             <a href="{{ url_for('item_module.bid_item', owner=item[2], name=item[1], description=item[6], item_id=item[0]) }}" style="color:black;">Name: {{ item[1] }}</a>
             <br> <a href="{{ url_for('user_module.user_profile', owner=item[2]) }}">Owner: {{ item[2] }} </a> <br> Description: {{ item[6] }} </p>
-            <a class="btn btn-primary" href="{{ url_for('item_module.bid_item', name=item[1], owner=item[2], description=item[6], item_id=item[0]) }}" role="button">Interested</a>
+
+            <a class="btn btn-primary" href="{{ url_for('item_module.bid_item', name=item[1], owner=item[2], description=item[6], item_id=item[0]) }}" role="button">
+                {% if bid_placed %}
+                Update bid
+                {% else %}
+                Interested
+                {% endif %}
+            </a>
      </div>
     </div>
 {% endblock %}

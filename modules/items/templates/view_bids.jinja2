@@ -9,6 +9,7 @@
     <tr>
       <th scope="col">User</th>
       <th scope="col">Bid</th>
+        <th scope="col">Select Bid</th>
     </tr>
   </thead>
   <tbody>
@@ -16,6 +17,7 @@
     <tr>
       <td>{{ bid.user }}</td>
       <td>{{ bid.quantity }}</td>
+        <td><a href="accept_bid?bidder={{ bid.user }}&item={{ item }}"><button class="btn">Accept Bid</button></a></td>
     </tr>
   {% endfor %}
   </tbody>
