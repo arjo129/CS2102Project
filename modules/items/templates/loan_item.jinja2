@@ -41,9 +41,9 @@
             </div>
             <label for="category_group">Categories:</label>
           <div class="btn-group-toggle" data-toggle="buttons" name="category_group">
-          {% for category in categories %}
+          {% for cat_name, cat_url in categories %}
               <label class="btn btn-secondary">
-                <input type="checkbox" autocomplete="off" name={{ category[0] }}> {{ category[0] }}
+                <input type="checkbox" autocomplete="off" name={{ cat_url }}> {{ cat_name }}
               </label>
           {% endfor %}
           </div>
