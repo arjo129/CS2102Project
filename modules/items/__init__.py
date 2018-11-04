@@ -2,6 +2,7 @@ from flask import Blueprint, session, render_template, request, redirect, url_fo
 from config import conn_string
 from modules.categories import view_category, Category
 from urllib import parse
+from modules.users import get_current_user
 import psycopg2
 
 
@@ -18,6 +19,14 @@ class Item:
         self.date_start = date_start
         self.date_end = date_end
         self.categories = categories
+
+
+def get_owner(item_id):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SELECT owner FROM items where item_id=%s", (item_id,))
+    (owner,)= curr.fetchone()
+    return owner
 
 
 def view_item(item_id):
@@ -42,8 +51,26 @@ def add_item(item):
 def bid_for(bidder, item_id, bid_amount):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
-    curr.execute("INSERT INTO bid_for VALUES (%s,%s,%s)",
+    curr.execute("INSERT INTO bid_for VALUES (%s,%s,%s,'unknown')",
                  (item_id, bidder, bid_amount))
+    conn.commit()
+
+
+def update_bid(item_id, bidder, value):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("UPDATE bid_for SET bid_amount = %s WHERE bidder = %s AND item_id = %s",
+                 (value, bidder, item_id))
+    conn.commit()
+
+
+def accept_bid(item_id, bidder):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("UPDATE bid_for SET selected ='selected' WHERE bidder = %s AND item_id = %s",
+                 (bidder, item_id))
+    curr.execute("UPDATE bid_for SET selected ='rejected' WHERE bidder != %s AND item_id = %s",
+                 (bidder, item_id))
     conn.commit()
 
 
@@ -54,7 +81,21 @@ def get_bids(item):
         "SELECT bidder, bid_amount FROM bid_for WHERE item_id=%s ORDER BY bid_amount DESC ", (item,))
     bids = []
     for bidder, bid_amount in curr:
-        bids.append({"user": bidder, "quantity": bid_amount})
+        print(item)
+        bids.append({"user": bidder, "quantity": bid_amount })
+    return bids
+
+
+def get_bids_by_user(user):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute(
+        "SELECT i.name, i.item_id, b.bid_amount, b.selected FROM bid_for b, items i "
+        "WHERE b.bidder = %s AND i.item_id = b.item_id", (user,))
+    bids = []
+    for item, item_id, bid_amount, status in curr:
+        print(item_id)
+        bids.append({"item_name": item, "item_id": item_id, "quantity": bid_amount, "selected": status })
     return bids
 
 
@@ -89,6 +130,17 @@ def get_average_bid(item):
     if bid:
         bid = round(bid[0], 2)
     return bid
+  
+
+def check_if_user_has_bid(user, item):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute(
+        "SELECT b.bid_amount FROM bid_for b WHERE b.bidder = %s AND b.item_id = %s",
+        (user, item))
+    for (b,) in curr:
+        return b
+    return False
 
 
 def get_id():
@@ -106,13 +158,15 @@ def get_id():
 item_module = Blueprint('item_module', __name__, template_folder='templates')
 
 
-@item_module.route("/view_item/<itemId>", methods=['GET', 'POST'])
-def view_page(itemId):
+@item_module.route("/view_item/<item_id>", methods=['GET', 'POST'])
+def view_page(item_id):
     if request.method == 'GET':
         item = view_item(itemId)
+        bid_placed = False
+        if g.user and check_if_user_has_bid(get_current_user().email, item_id):
+            bid_placed = True
         return render_template("view_item.jinja2", item=item, highest_bids=get_highest_bids(itemId),
-                               lowest_bids=get_lowest_bids(itemId), average_bid=get_average_bid(itemId))
-
+                               lowest_bids=get_lowest_bids(itemId), average_bid=get_average_bid(itemId), bid_placed=bid_placed)
     if request.method == 'POST':
         item = request.form.get("item_entry")
         if item == None:
@@ -121,23 +175,45 @@ def view_page(itemId):
         return redirect(url_for('.bid_item', item_id=item_id, name=name, owner=owner, description=description))
 
 
+def delete_bid(user, item_id):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("DELETE FROM bid_for WHERE bidder = %s AND item_id = %s",
+                 (user, item_id))
+    conn.commit()
+
+
+@item_module.route("/delete_bid", methods=['GET'])
+def retract_bid():
+    if g.user is None:
+        return redirect("/login")
+    item_id = request.args.get("item_id")
+    delete_bid(g.user.email, item_id)
+    return redirect("/my_bids")
+
+
 @item_module.route("/bid_item", methods=['GET', 'POST'])
 def bid_item():
     if g.user is None:
         return redirect("/login")
-
     name = request.args.get("name")
     owner = request.args.get("owner")
     description = request.args.get("description")
     item_id = request.args.get("item_id")
     if request.method == 'GET':
-        return render_template("bid_item.jinja2", name=name, owner=owner, description=description, item_id=item_id)
-
+        price = check_if_user_has_bid(g.user.email, item_id)
+        if not price:
+            return render_template("bid_item.jinja2", name=name, owner=owner, description=description, item_id=item_id)
+        else:
+            return render_template("bid_item.jinja2", name=name, owner=owner, description=description, item_id=item_id, prev_price=price)
     if request.method == 'POST':
         value = request.form.get("bid_value")
         bidder = g.user.email
         item_id = request.args.get("item_id")
-        bid_for(item_id, bidder, value)
+        if not check_if_user_has_bid(g.user.email, item_id):
+            bid_for(item_id, bidder, value)
+        else:
+            update_bid(item_id, bidder, value)
         return redirect("/view_item/{}".format(item_id))
 
 
@@ -174,4 +250,23 @@ def loan_item():
 def view_bids():
     item = request.args.get('item')
     bids = get_bids(item)
-    return render_template("view_bids.jinja2", bids=bids)
+    return render_template("view_bids.jinja2", bids=bids, item=item)
+
+
+@item_module.route("/my_bids", methods=['GET'])
+def my_bids():
+    if g.user is None:
+        return redirect("/login")
+    user = get_current_user()
+    return render_template("my_bids.jinja2", bids=get_bids_by_user(user.email))
+
+@item_module.route("/accept_bid", methods=['GET'])
+def accept():
+    if g.user is None:
+        return redirect("/login")
+    item = request.args.get("item")
+    bidder = request.args.get("bidder")
+    if get_owner(item) != g.user.email:
+        return "G3T 0UT H4x0r!!"
+    accept_bid(item, bidder)
+    return redirect("/")
