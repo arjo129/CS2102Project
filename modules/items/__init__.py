@@ -340,6 +340,9 @@ def view_bids():
 
 @item_module.route("/delete_item/<item_id>", methods=["GET", "POST"])
 def delete_item_route(item_id):
+    if g.user == None:
+        return redirect("/login")
+
     delete_item(item_id)
     return redirect("/")
 
