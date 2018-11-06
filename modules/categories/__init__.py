@@ -19,17 +19,15 @@ def view_category():
 def view_subcategory(subcategory):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
-    curr.execute("SELECT ic.item_id FROM item_belongs_to_category ic WHERE ic.category = %s", (subcategory,))
+    curr.execute("SELECT i.item_id, i.name, u.display_name, i.location "
+                     "FROM items i, users u, item_belongs_to_category ic "
+                     "WHERE i.owner = u.email "
+                     "AND u.role != 'banned' "
+                     "AND ic.item_id = i.item_id "
+                     "AND ic.category = %s "
+                     "ORDER BY i.item_id DESC", (subcategory,))
     # list of item ids that belong to subcategory
-    items_in_category = curr.fetchall()
-    if not items_in_category:
-        return []
-    item_ids = [i[0] for i in items_in_category]
-    format_strings = ','.join(['%s'] * len(item_ids))
-    curr_2 = conn.cursor()
-    curr_2.execute("SELECT * FROM items i WHERE i.item_id IN (%s)" % format_strings,
-            tuple(item_ids))
-    return curr_2
+    return curr.fetchall()
 
 
 def add_category(category):
