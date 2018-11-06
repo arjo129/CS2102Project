@@ -1,6 +1,9 @@
-from flask import Blueprint, session, render_template, request, redirect, url_for, g
+from flask import Blueprint, session, render_template, request, redirect, url_for, g, flash
+from psycopg2._psycopg import InternalError
+
 from config import conn_string
 from modules.categories import view_category, Category
+from urllib import parse
 from modules.users import get_current_user
 import psycopg2
 
@@ -31,8 +34,20 @@ def get_owner(item_id):
 def view_item(item_id):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
-    curr.execute("SELECT * FROM items where item_id=%s",  (item_id,))
+    curr.execute("SELECT i.item_id, i.name, i.owner, i.description, u.display_name FROM items i, users u "
+                 "WHERE i.item_id=%s AND i.owner = u.email",  (item_id,))
     return curr.fetchone()
+
+
+def view_other_related_items(item_id):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SELECT DISTINCT i.item_id, i.name, u.display_name, i.location FROM bid_for b "
+                 "INNER JOIN bid_for b2 ON b.bidder = b2.bidder AND b2.item_id <> b.item_id AND b.item_id = %s"
+                 "INNER JOIN items i ON i.item_id = b2.item_id "
+				 "INNER JOIN users u ON u.email = b2.bidder "
+                 "ORDER BY i.item_id DESC",  (item_id,))
+    return curr.fetchall()
 
 
 def add_item(item):
@@ -97,6 +112,38 @@ def get_bids_by_user(user):
     return bids
 
 
+def get_highest_bids(item):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute(
+        "SELECT u.display_name, b.bidder, b.bid_amount FROM bid_for b INNER JOIN users u "
+        "ON b.bidder = u.email AND b.item_id=%s AND b.bid_amount >= "
+        "ALL(SELECT bid_amount FROM bid_for WHERE item_id=%s)", (item, item))
+    bid = curr.fetchall()
+    return bid
+
+
+def get_lowest_bids(item):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute(
+        "SELECT u.display_name, b.bidder, b.bid_amount FROM bid_for b INNER JOIN users u "
+        "ON b.bidder = u.email AND b.item_id=%s AND b.bid_amount <= "
+        "ALL(SELECT bid_amount FROM bid_for WHERE item_id=%s)", (item, item))
+    bid = curr.fetchall()
+    return bid
+
+
+def get_average_bid(item):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute(
+        "SELECT AVG(bid_amount) FROM bid_for GROUP BY item_id HAVING item_id=%s", (item,))
+    bid = curr.fetchone()
+    if bid:
+        bid = round(bid[0], 2)
+    return bid
+  
 
 def check_if_user_has_bid(user, item):
     conn = psycopg2.connect(conn_string)
@@ -131,12 +178,14 @@ def view_page(item_id):
         bid_placed = False
         if g.user and check_if_user_has_bid(get_current_user().email, item_id):
             bid_placed = True
-        return render_template("view_item.jinja2", item=item, bid_placed=bid_placed)
-
+        return render_template("view_item.jinja2", item=item, highest_bids=get_highest_bids(item_id),
+                               lowest_bids=get_lowest_bids(item_id), average_bid=get_average_bid(item_id),
+                               bid_placed=bid_placed, related_items=view_other_related_items(item_id),
+                               can_bid=g.user and g.user.email != item[2])
     if request.method == 'POST':
         item = request.form.get("item_entry")
         if item == None:
-            return redirect("/view_item/<itemId>")
+            return redirect("/view_item/<item_id>")
         item_id, name, owner, description = item.split()
         return redirect(url_for('.bid_item', item_id=item_id, name=name, owner=owner, description=description))
 
@@ -199,16 +248,20 @@ def loan_item():
         date_start = request.form.get("date_start")
         date_end = request.form.get("date_end")
         categories = []
-        for category in view_category():
-            if request.form.get(category[0]):
-                categories.append(Category(category[0]))
+        for category in map(lambda cat : cat[0], view_category()):
+            if request.form.get(parse.quote(category)):
+                categories.append(Category(category))
         item = Item(item_id=item_id, name=name, owner=owner, location=location, latitude=latitude, longitude=longitude, description=description,
                     date_start=date_start, date_end=date_end, categories=categories)
-
-        add_item(item)
+        try:
+            add_item(item)
+        except InternalError as e:
+            categories = map(lambda cat: (cat[0], parse.quote(cat[0])), view_category())
+            return render_template("loan_item.jinja2", categories=categories, error=str(e))
         return redirect("/view_item/{}".format(item_id))
     else:
-        return render_template("loan_item.jinja2", categories=view_category())
+        categories = map(lambda cat: (cat[0], parse.quote(cat[0])), view_category())
+        return render_template("loan_item.jinja2", categories=categories)
 
 
 @item_module.route("/view_bids", methods=['GET'])

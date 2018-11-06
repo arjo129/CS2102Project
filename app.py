@@ -23,7 +23,8 @@ def getItems(searchParams=None):
             "FROM items i, users u "
             "WHERE i.owner = u.email "
             "AND u.role != 'banned' "
-            "AND (LOWER(i.name) LIKE LOWER(%s) OR LOWER(i.owner) LIKE LOWER(%s) OR LOWER(i.location) LIKE LOWER(%s))",
+            "AND (LOWER(i.name) LIKE LOWER(%s) OR LOWER(i.owner) LIKE LOWER(%s) OR LOWER(i.location) LIKE LOWER(%s))"
+            "ORDER BY i.item_id DESC",
             ('%'+searchParams+'%',
              '%'+searchParams+'%', '%'+searchParams+'%')
         )
@@ -31,7 +32,8 @@ def getItems(searchParams=None):
         curr.execute("SELECT i.item_id, i.name, u.display_name, i.location "
                      "FROM items i, users u "
                      "WHERE i.owner = u.email "
-                     "AND u.role != 'banned'")
+                     "AND u.role != 'banned'"
+                     "ORDER BY i.item_id DESC")
     items = []
     for item in curr:
         items.append({"id": item[0], "name": item[1], "owner": item[2],
