@@ -245,8 +245,9 @@ def reset_password():
         elif not get_current_user() and "email" in request.args:
             email = request.args.get("email")
             link = request.args.get("link")
-            if is_valid_rest(email, link):
+            if is_valid_rest(email, link) and request.form.get("new_password") == request.form.get("confirm_password"):
                 update_password(email, request.form.get("new_password"))
+            return redirect("/login")
         else:
             user = get_current_user()
             if user.check_password(request.form.get("old_password")):
