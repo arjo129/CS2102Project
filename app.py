@@ -24,6 +24,7 @@ def getItems(searchParams=None):
             "WHERE i.owner = u.email "
             "AND u.role != 'banned' "
             "AND (LOWER(i.name) LIKE LOWER(%s) OR LOWER(i.owner) LIKE LOWER(%s) OR LOWER(i.location) LIKE LOWER(%s))"
+            "AND i.item_id NOT IN (SELECT item_id FROM bid_for WHERE selected='selected')"
             "ORDER BY i.item_id DESC",
             ('%'+searchParams+'%',
              '%'+searchParams+'%', '%'+searchParams+'%')
@@ -33,6 +34,7 @@ def getItems(searchParams=None):
                      "FROM items i, users u "
                      "WHERE i.owner = u.email "
                      "AND u.role != 'banned'"
+                     "AND i.item_id NOT IN (SELECT item_id FROM bid_for WHERE selected='selected')"
                      "ORDER BY i.item_id DESC")
     items = []
     for item in curr:
