@@ -148,4 +148,26 @@ FOR EACH
 	ROW
 	EXECUTE PROCEDURE check_item_at_least_one_category_table_belongs_to_delete
 	();
+
+
 -- Owner of item cannot bid for own item
+CREATE FUNCTION check_owner_doesnt_bid_for_own_item() RETURNS trigger
+    LANGUAGE plpgsql
+    AS $$BEGIN
+    IF EXISTS (SELECT b.item_id FROM bid_for b,items i WHERE b.item_id=i.item_id AND i.owner = b.bidder) THEN
+            RAISE EXCEPTION 'Owner Cannot bid for item';
+        END IF;
+  RETURN NEW;
+END;$$;
+
+CREATE TRIGGER check_bidder_is_valid_on_update
+  BEFORE UPDATE
+  ON bid_for
+  FOR EACH ROW
+  EXECUTE PROCEDURE check_owner_doesnt_bid_for_own_item();
+
+CREATE TRIGGER check_bidder_is_valid_on_insert
+  BEFORE INSERT
+  ON bid_for
+  FOR EACH ROW
+  EXECUTE PROCEDURE check_owner_doesnt_bid_for_own_item();
