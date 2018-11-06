@@ -110,7 +110,8 @@ RETURNS TRIGGER AS $$
 	BEGIN
 		IF (EXISTS (SELECT *
 		FROM item_belongs_to_category c
-		WHERE OLD.item_id = c.item_id AND OLD.category <> c.category)) THEN
+		WHERE OLD.item_id = c.item_id AND OLD.category <> c.category)) 
+		OR OLD.item_id = NEW.item_id THEN
 		RETURN NEW;
 	END
 	IF;
@@ -141,7 +142,7 @@ RETURN NULL;
 END; $$ LANGUAGE PLPGSQL;
 
 CREATE TRIGGER check_item_at_least_one_category_table_belongs_to_delete
-AFTER
+BEFORE
 	DELETE
 ON item_belongs_to_category
 FOR EACH
