@@ -1,3 +1,5 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 DROP TABLE IF EXISTS bid_for
 CASCADE;
 DROP TABLE IF EXISTS items
@@ -72,10 +74,10 @@ CREATE TABLE bid_for
 CREATE TABLE forgot_password
 (
 	email VARCHAR(50),
-	reset_link VARCHAR(100) PRIMARY KEY,
-	valid BOOLEAN NOT NULL,
+	reset_link UUID DEFAULT uuid_generate_v4 (),
 	requested_time TIMESTAMP NOT NULL,
-	FOREIGN KEY (email) REFERENCES users(email)
+	FOREIGN KEY (email) REFERENCES users(email),
+	PRIMARY KEY (reset_link)
 );
 
 

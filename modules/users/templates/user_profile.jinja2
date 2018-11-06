@@ -6,8 +6,11 @@
       <p><h3>{{ display_name }}</h3></p>
       {{ role }}
       <br>
-      <h6> <ol>
+      <h6>
       <p>Email: {{ email }}</p>
+      {% if view_bid  %}
+          <p><a href="/reset_password"/>Change password</a></p>
+      {% endif %}
       <p>Items loaning: </p>
       <ul class="list-group list-group-flush">
       {% for item in items %}

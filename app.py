@@ -19,7 +19,7 @@ def getItems(searchParams=None):
     curr = conn.cursor()
     if searchParams != None:
         curr.execute(
-            "SELECT i.item_id, i.name, u.display_name, i.location "
+            "SELECT DISTINCT i.item_id, i.name, u.display_name, i.location "
             "FROM items i, users u "
             "WHERE i.owner = u.email "
             "AND u.role != 'banned' "

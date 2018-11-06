@@ -77,6 +77,40 @@ def retrieve_user(email):
     raise InvalidLoginCredentials
 
 
+def get_password_reset_link():
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SELECT uuid_generate_v4();")
+    for (uuid,) in curr:
+        return uuid
+
+def create_password_link(email, uuid):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("INSERT INTO forgot_password(email, reset_link, requested_time) "
+                 "VALUES (%s,%s,CURRENT_TIMESTAMP)",(email, uuid))
+    conn.commit()
+
+def is_valid_rest(email, uuid):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SELECT email, reset_link FROM forgot_password "
+                 "WHERE email=%s AND reset_link=%s "
+                 "AND requested_time > current_timestamp - INTERVAL '1 days'",
+                 (email, uuid))
+    for unused in curr:
+        return True
+    return False
+
+
+def update_password(email, password):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    hash = hashpw(password.encode(), gensalt()).decode('utf-8')
+    curr.execute("UPDATE users SET password=%s WHERE email=%s", (hash, email))
+    conn.commit()
+
+
 def get_current_user():
     """
     Retrieves the user who is currently logged in. Use this method if you want to find who is logged in
@@ -84,6 +118,7 @@ def get_current_user():
     """
     if 'user' in session:
         return retrieve_user(json.loads(session['user'])['email'])
+
 
 
 user_module = Blueprint('user_module', __name__, template_folder='templates')
@@ -170,6 +205,56 @@ def log_out():
     return redirect("/")
 
 
-@user_module.route("/reset_password", methods=['GET'])
+
+
+@user_module.route("/reset_password", methods=['GET', 'POST'])
 def reset_password():
-    return render_template("reset.jinja2")
+    if request.method == 'GET':
+        if not get_current_user():
+            if "email" not in request.args:
+                return render_template("lost_password.jinja2")
+            else:
+                email = request.args.get("email")
+                link = request.args.get("link")
+                if is_valid_rest(email, link):
+                    return render_template("reset_password.jinja2", dont_ask_old=True)
+                return "get out hacker!!"
+        else:
+            return render_template("reset_password.jinja2")
+    elif request.method == 'POST':
+        if not get_current_user() and "email" not in request.args:
+            link = get_password_reset_link()
+            email = request.form.get("email")
+            create_password_link(email, link)
+            """
+            import sendgrid
+            from sendgrid.helpers.mail import Email, Content, Mail
+            sg = sendgrid.SendGridAPIClient(apikey=sendgrid)
+            from_email = Email("arjo129@gmail.com")
+            to_email = Email(email)
+            subject = "Password reset links"
+            content = Content("text/plain", "Reset Link: "
+                              + "http://127.0.0.1:5000/reset_password?email="+email+"&"
+                              + "link=" + link)
+            mail = Mail(from_email, subject, to_email, content)
+            response = sg.client.mail.send.post(request_body=mail.get())
+            
+            print(response)
+            """
+            return redirect("/login")
+        elif not get_current_user() and "email" in request.args:
+            email = request.args.get("email")
+            link = request.args.get("link")
+            if is_valid_rest(email, link):
+                update_password(email, request.form.get("new_password"))
+        else:
+            user = get_current_user()
+            if user.check_password(request.form.get("old_password")):
+                if request.form.get("new_password") == request.form.get("confirm_password"):
+                    update_password(user.email, request.form.get("new_password"))
+                    return redirect("/")
+                else:
+                    return render_template("reset_password.jinja2", error="New passwords don't match")
+            else:
+                return render_template("reset_password.jinja2", error="Incorrect old password")
+
