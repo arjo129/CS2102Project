@@ -231,18 +231,22 @@ def view_page(item_id):
         item = view_item(item_id)
         bid_placed = False
         can_bid = False
+        is_owner = False
         if g.user and check_if_user_has_bid(get_current_user().email, item_id):
             bid_placed = True
         if g.user != None:
             logged_in = True
             if g.user.email != item[2]:
                 can_bid = True
-
+            else:
+                is_owner = True
+            if g.user.role == "admin":
+                is_owner = True
         return render_template("view_item.jinja2", item=item, highest_bids=get_highest_bids(item_id),
                                lowest_bids=get_lowest_bids(item_id), average_bid=get_average_bid(item_id),
                                bid_placed=bid_placed, related_items=view_other_related_items(
                                    item_id),
-                               can_bid=can_bid, logged_in=logged_in)
+                               can_bid=can_bid, logged_in=logged_in, is_owner=is_owner)
     if request.method == 'POST':
         item = request.form.get("item_entry")
         if item == None:
