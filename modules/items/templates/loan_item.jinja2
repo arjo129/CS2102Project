@@ -6,52 +6,100 @@
     {% endif %}
     <div class="card">
   <div class="card-body">
+      {% if edit %}
+      <h3>Edit an item</h3>
+      {% else %}
       <h3>Loan out an item</h3>
+      {% endif %}
       <form method="post">
             <div class="form-group">
             <label for="name">Name:</label>
-            <input type="text" class="form-control" name="name" required>
+            {% if item %}
+                <input type="text" value="{{ item[1] }}" class="form-control" name="name" required>
+            {% else %}
+                <input type="text" class="form-control" name="name" required>
+            {% endif %}
             </div>
 
             <div class="form-group">
             <label for="location">Location:</label>
-            <input type="text" class="form-control" name="location" required>
+            {% if item %}
+                <input type="text" value="{{ item[3] }}" class="form-control" name="location" required>
+
+            {% else %}
+                <input type="text" class="form-control" name="location" required>
+            {% endif %}
             </div>
 
             <div class="form-group">
             <label for="latitude">Latitude:</label>
-            <input type="number" step="any" class="form-control" name="latitude" required>
+            {% if item %}
+                <input type="number" value="{{ item[4] }}" step="any" class="form-control" name="latitude" required>
+
+            {% else %}
+                <input type="number" step="any" class="form-control" name="latitude" required>
+            {% endif %}
             </div>
 
             <div class="form-group">
             <label for="longitude">Longitude:</label>
-            <input type="number" step="any" class="form-control" name="longitude" required>
+            {% if item %}
+                <input type="number" value="{{ item[5] }}" step="any" class="form-control" name="longitude" required>
+
+            {% else %}
+                <input type="number" step="any" class="form-control" name="longitude" required>
+            {% endif %}
             </div>
 
             <div class="form-group">
             <label for="description">Description:</label>
-            <input type="text" class="form-control" name="description" required>
+            {% if item %}
+                <input type="text" value="{{ item[6] }}" class="form-control" name="description" required>
+
+            {% else %}
+                <input type="text" class="form-control" name="description" required>
+            {% endif %}
             </div>
 
             <div class="form-group">
             <label for="date_start">Starting date:</label>
-            <input type="date" class="form-control" name="date_start" required>
+            {% if item %}
+                <input type="date" value="{{ item[7] }}" class="form-control" name="date_start" required>
+
+            {% else %}
+                <input type="date" class="form-control" name="date_start" required>
+            {% endif %}
             </div>
 
             <div class="form-group">
             <label for="date_end">Ending date:</label>
-            <input type="date" class="form-control" name="date_end" required>
+            {% if item %}
+                <input type="date" value="{{ item[8] }}" class="form-control" name="date_end" required>
+
+            {% else %}
+                <input type="date" class="form-control" name="date_end" required>
+            {% endif %}
             </div>
             <label for="category_group">Categories:</label>
           <div class="btn-group-toggle" data-toggle="buttons" name="category_group">
           {% for cat_name, cat_url in categories %}
-              <label class="btn btn-secondary">
-                <input type="checkbox" autocomplete="off" name={{ cat_url }}> {{ cat_name }}
-              </label>
+                {% if cat_name in selected_categories %}
+                <label class="btn btn-secondary active">
+                    <input type="checkbox" checked autocomplete="off" name={{ cat_url }}> {{ cat_name }}
+                </label>
+                {% else %}
+                <label class="btn btn-secondary">
+                    <input type="checkbox" autocomplete="off" name={{ cat_url }}> {{ cat_name }}
+                </label>
+                {% endif %}
           {% endfor %}
           </div>
             <br>
-          <button type="submit" class="btn btn-primary pull-right">Loan out</button>
+          {% if edit %}
+                <button type="submit" class="btn btn-primary pull-right">Edit Item</button>
+          {% else %}
+                <button type="submit" class="btn btn-primary pull-right">Loan out</button>
+          {% endif %}
       </form>
 
   </div></div>

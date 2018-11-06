@@ -27,7 +27,7 @@ def get_owner(item_id):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
     curr.execute("SELECT owner FROM items where item_id=%s", (item_id,))
-    (owner,)= curr.fetchone()
+    (owner,) = curr.fetchone()
     return owner
 
 
@@ -39,13 +39,31 @@ def view_item(item_id):
     return curr.fetchone()
 
 
+def get_categories_for_item(item_id):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute(
+        "SELECT category FROM item_belongs_to_category WHERE item_id = %s", (item_id,))
+    return curr.fetchall()
+
+
+def view_item_all(item_id):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SELECT i.item_id, i.name, i.owner, i.location,"
+                 "i.latitude, i.longitude, i.description, i.date_start,"
+                 "i.date_end, u.display_name FROM items i, users u "
+                 "WHERE i.item_id=%s AND i.owner = u.email",  (item_id,))
+    return curr.fetchone()
+
+
 def view_other_related_items(item_id):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
     curr.execute("SELECT DISTINCT i.item_id, i.name, u.display_name, i.location FROM bid_for b "
                  "INNER JOIN bid_for b2 ON b.bidder = b2.bidder AND b2.item_id <> b.item_id AND b.item_id = %s"
                  "INNER JOIN items i ON i.item_id = b2.item_id "
-				 "INNER JOIN users u ON u.email = b2.bidder "
+                 "INNER JOIN users u ON u.email = b2.bidder "
                  "ORDER BY i.item_id DESC",  (item_id,))
     return curr.fetchall()
 
@@ -54,10 +72,51 @@ def add_item(item):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
     for category in item.categories:
-        curr.execute("INSERT INTO item_belongs_to_category VALUES (%s, %s)", (item.item_id, category.name))
+        curr.execute("INSERT INTO item_belongs_to_category VALUES (%s, %s)",
+                     (item.item_id, category.name))
     curr.execute("INSERT INTO items VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                  (item.item_id, item.name, item.owner, item.location, item.latitude, item.longitude,
                   item.description, item.date_start, item.date_end))
+    conn.commit()
+
+
+def edit_item(item, previous_categories):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    # sqlQuery = "BEGIN;"
+    # sqlQuery = sqlQuery + \
+    #     "DELETE FROM item_belongs_to_category WHERE item_id = '{}'; ".format(
+    #         item.item_id)
+    # for category in item.categories:
+    #     sqlQuery = sqlQuery + \
+    #         "INSERT INTO item_belongs_to_category VALUES ('{}', '{}'); ".format(
+    #             item.item_id, category.name)
+    # sqlQuery = sqlQuery + "UPDATE items SET name = '{}', location = '{}', latitude = '{}', longitude = '{}', description = '{}', date_start = '{}', date_end = '{}' WHERE item_id = '{}';".format(
+    #     item.name, item.location, item.latitude, item.longitude, item.description, item.date_start, item.date_end, item.item_id)
+
+    # sqlQuery = sqlQuery + "COMMIT;"
+    # curr.execute(sqlQuery)
+    # curr.execute("DELETE FROM items WHERE item_id = %s", (item.item_id,))
+    previous_categories = list(map(lambda x: x[0], previous_categories))
+    item_category_names = list(map(lambda x: x.name, item.categories))
+
+    for category in item.categories:
+        if category.name not in previous_categories:
+            curr.execute("INSERT INTO item_belongs_to_category VALUES (%s, %s)",
+                         (item.item_id, category.name))
+    for prev_category in previous_categories:
+        if prev_category not in item_category_names:
+            print(prev_category)
+            print(item_category_names)
+            curr.execute(
+                "DELETE FROM item_belongs_to_category WHERE category = %s and item_id = %s", (prev_category, item.item_id))
+    curr.execute(
+        "UPDATE items SET name = %s, location = %s, latitude = %s,"
+        "longitude = %s, description = %s, date_start = %s, date_end = %s WHERE item_id = %s",
+        (item.name, item.location, item.latitude, item.longitude, item.description, item.date_start, item.date_end, item.item_id))
+    # curr.execute("INSERT INTO items VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+    #              (item.item_id, item.name, item.owner, item.location, item.latitude, item.longitude,
+    #               item.description, item.date_start, item.date_end))
     conn.commit()
 
 
@@ -94,8 +153,7 @@ def get_bids(item):
         "SELECT bidder, bid_amount FROM bid_for WHERE item_id=%s ORDER BY bid_amount DESC ", (item,))
     bids = []
     for bidder, bid_amount in curr:
-        print(item)
-        bids.append({"user": bidder, "quantity": bid_amount })
+        bids.append({"user": bidder, "quantity": bid_amount})
     return bids
 
 
@@ -107,8 +165,8 @@ def get_bids_by_user(user):
         "WHERE b.bidder = %s AND i.item_id = b.item_id", (user,))
     bids = []
     for item, item_id, bid_amount, status in curr:
-        print(item_id)
-        bids.append({"item_name": item, "item_id": item_id, "quantity": bid_amount, "selected": status })
+        bids.append({"item_name": item, "item_id": item_id,
+                     "quantity": bid_amount, "selected": status})
     return bids
 
 
@@ -143,7 +201,7 @@ def get_average_bid(item):
     if bid:
         bid = round(bid[0], 2)
     return bid
-  
+
 
 def check_if_user_has_bid(user, item):
     conn = psycopg2.connect(conn_string)
@@ -174,17 +232,22 @@ item_module = Blueprint('item_module', __name__, template_folder='templates')
 @item_module.route("/view_item/<item_id>", methods=['GET', 'POST'])
 def view_page(item_id):
     if request.method == 'GET':
+        logged_in = False
         item = view_item(item_id)
         bid_placed = False
         can_bid = False
         if g.user and check_if_user_has_bid(get_current_user().email, item_id):
             bid_placed = True
-        if g.user and g.user.email != item[2]:
-            can_bid = True
+        if g.user != None:
+            logged_in = True
+            if g.user.email != item[2]:
+                can_bid = True
+
         return render_template("view_item.jinja2", item=item, highest_bids=get_highest_bids(item_id),
                                lowest_bids=get_lowest_bids(item_id), average_bid=get_average_bid(item_id),
-                               bid_placed=bid_placed, related_items=view_other_related_items(item_id),
-                               can_bid=can_bid)
+                               bid_placed=bid_placed, related_items=view_other_related_items(
+                                   item_id),
+                               can_bid=can_bid, logged_in=logged_in)
     if request.method == 'POST':
         item = request.form.get("item_entry")
         if item == None:
@@ -251,7 +314,7 @@ def loan_item():
         date_start = request.form.get("date_start")
         date_end = request.form.get("date_end")
         categories = []
-        for category in map(lambda cat : cat[0], view_category()):
+        for category in map(lambda cat: cat[0], view_category()):
             if request.form.get(parse.quote(category)):
                 categories.append(Category(category))
         item = Item(item_id=item_id, name=name, owner=owner, location=location, latitude=latitude, longitude=longitude, description=description,
@@ -259,11 +322,13 @@ def loan_item():
         try:
             add_item(item)
         except InternalError as e:
-            categories = map(lambda cat: (cat[0], parse.quote(cat[0])), view_category())
+            categories = map(lambda cat: (
+                cat[0], parse.quote(cat[0])), view_category())
             return render_template("loan_item.jinja2", categories=categories, error=str(e))
         return redirect("/view_item/{}".format(item_id))
     else:
-        categories = map(lambda cat: (cat[0], parse.quote(cat[0])), view_category())
+        categories = map(lambda cat: (
+            cat[0], parse.quote(cat[0])), view_category())
         return render_template("loan_item.jinja2", categories=categories)
 
 
@@ -274,12 +339,53 @@ def view_bids():
     return render_template("view_bids.jinja2", bids=bids, item=item)
 
 
+@item_module.route("/edit_item/<item_id>", methods=["GET", "POST"])
+def edit_item_route(item_id):
+    item_details = view_item_all(item_id)
+    categories_this_item_belong_to = get_categories_for_item(item_id)
+
+    if g.user is None:
+        return redirect("/login")
+
+    elif request.method == 'POST':
+        # print("lol")
+        owner = item_details[2]
+        name = request.form.get("name")
+        location = request.form.get("location")
+        latitude = request.form.get("latitude")
+        longitude = request.form.get("longitude")
+        description = request.form.get("description")
+        date_start = request.form.get("date_start")
+        date_end = request.form.get("date_end")
+        categories = []
+        for category in map(lambda cat: cat[0], view_category()):
+            if request.form.get(parse.quote(category)):
+                categories.append(Category(category))
+        item = Item(item_id=item_id, name=name, owner=owner, location=location, latitude=latitude, longitude=longitude, description=description,
+                    date_start=date_start, date_end=date_end, categories=categories)
+
+        try:
+            edit_item(item, categories_this_item_belong_to)
+        except InternalError as e:
+            categories = map(lambda cat: (
+                cat[0], parse.quote(cat[0])), view_category())
+            return render_template("loan_item.jinja2", categories=categories, error=str(e))
+        return redirect("/view_item/{}".format(item_id))
+    else:
+        belong_categories_flattened = list(map(lambda x: x[0],
+                                               categories_this_item_belong_to))
+        categories = map(lambda cat: (
+            cat[0], parse.quote(cat[0])), view_category())
+        return render_template("loan_item.jinja2", categories=categories, edit=True, item=item_details, selected_categories=belong_categories_flattened)
+
+
 @item_module.route("/my_bids", methods=['GET'])
 def my_bids():
     if g.user is None:
         return redirect("/login")
     user = get_current_user()
     return render_template("my_bids.jinja2", bids=get_bids_by_user(user.email))
+
 
 @item_module.route("/accept_bid", methods=['GET'])
 def accept():

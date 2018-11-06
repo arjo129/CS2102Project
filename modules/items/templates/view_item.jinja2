@@ -5,9 +5,13 @@
   	<div class="card-body">
 
       <h3>Item details</h3>
-        <p>
             <a href="{{ url_for('item_module.bid_item', owner=item[2], name=item[1], description=item[3], item_id=item[0]) }}" style="color:black;">Name: {{ item[1] }}</a>
-            <br> Owner: <a href="{{ url_for('user_module.user_profile', owner=item[2]) }}">{{ item[2] }} </a> <br> Description: {{ item[3] }} <br></p>
+            <br> Owner: <a href="{{ url_for('user_module.user_profile', owner=item[2]) }}">{{ item[2] }} </a> <br> Description: {{ item[3] }} <br>
+            {% if logged_in %}
+                <a class="btn btn-primary" href="{{ url_for('item_module.edit_item_route', item_id=item[0]) }}" role="button">Edit Item</a>
+            {% endif %}
+        </p>
+            
         <p>
             {% if highest_bids and lowest_bids and average_bid %}
                 Highest bid(s):
