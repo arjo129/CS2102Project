@@ -9,6 +9,7 @@
             <br> Owner: <a href="{{ url_for('user_module.user_profile', owner=item[2]) }}">{{ item[2] }} </a> <br> Description: {{ item[3] }} <br>
             {% if logged_in %}
                 <a class="btn btn-primary" href="{{ url_for('item_module.edit_item_route', item_id=item[0]) }}" role="button">Edit Item</a>
+                <a class="btn btn-primary" href="{{ url_for('item_module.delete_item_route', item_id=item[0]) }}" role="button">Delete Item</a>
             {% endif %}
         </p>
             

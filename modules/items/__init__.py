@@ -83,20 +83,6 @@ def add_item(item):
 def edit_item(item, previous_categories):
     conn = psycopg2.connect(conn_string)
     curr = conn.cursor()
-    # sqlQuery = "BEGIN;"
-    # sqlQuery = sqlQuery + \
-    #     "DELETE FROM item_belongs_to_category WHERE item_id = '{}'; ".format(
-    #         item.item_id)
-    # for category in item.categories:
-    #     sqlQuery = sqlQuery + \
-    #         "INSERT INTO item_belongs_to_category VALUES ('{}', '{}'); ".format(
-    #             item.item_id, category.name)
-    # sqlQuery = sqlQuery + "UPDATE items SET name = '{}', location = '{}', latitude = '{}', longitude = '{}', description = '{}', date_start = '{}', date_end = '{}' WHERE item_id = '{}';".format(
-    #     item.name, item.location, item.latitude, item.longitude, item.description, item.date_start, item.date_end, item.item_id)
-
-    # sqlQuery = sqlQuery + "COMMIT;"
-    # curr.execute(sqlQuery)
-    # curr.execute("DELETE FROM items WHERE item_id = %s", (item.item_id,))
     previous_categories = list(map(lambda x: x[0], previous_categories))
     item_category_names = list(map(lambda x: x.name, item.categories))
 
@@ -114,9 +100,18 @@ def edit_item(item, previous_categories):
         "UPDATE items SET name = %s, location = %s, latitude = %s,"
         "longitude = %s, description = %s, date_start = %s, date_end = %s WHERE item_id = %s",
         (item.name, item.location, item.latitude, item.longitude, item.description, item.date_start, item.date_end, item.item_id))
-    # curr.execute("INSERT INTO items VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-    #              (item.item_id, item.name, item.owner, item.location, item.latitude, item.longitude,
-    #               item.description, item.date_start, item.date_end))
+    conn.commit()
+
+
+def delete_item(item_id):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("SET session_replication_role = replica")
+    curr.execute(
+        "DELETE FROM items WHERE item_id = %s", (item_id,))
+    curr.execute("DELETE FROM item_belongs_to_category WHERE item_id = %s",
+                 (item_id,))
+    curr.execute("SET session_replication_role = DEFAULT")
     conn.commit()
 
 
@@ -337,6 +332,12 @@ def view_bids():
     item = request.args.get('item')
     bids = get_bids(item)
     return render_template("view_bids.jinja2", bids=bids, item=item)
+
+
+@item_module.route("/delete_item/<item_id>", methods=["GET", "POST"])
+def delete_item_route(item_id):
+    delete_item(item_id)
+    return redirect("/")
 
 
 @item_module.route("/edit_item/<item_id>", methods=["GET", "POST"])
