@@ -4,12 +4,27 @@
     <div class="card">
   <div class="card-body">
       <h3>Subcategory: {{ subcategory }}</h3>
-        <ul>
-        {% for item in items %}
-          <p><a href="/view_item/{{ item[0] }}">{{ item[1] }}</a>
-          </p>
-        {% endfor %}
-        </ul>
+        <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Owner</th>
+            <th scope="col">Location</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in items %}
+            <tr>
+              <th scope="row">{{ item.id }}</th>
+              <td>{{ item.name }}</td>
+              <td>{{ item.owner }}</td>
+              <td>{{ item.location }}</td>
+              <td><a class="btn btn-primary" href="/view_item/{{ item.id }}" role="button">View details</a></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
      </div>
     </div>
     </div>
