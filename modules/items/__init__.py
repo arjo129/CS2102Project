@@ -342,7 +342,8 @@ def view_bids():
 def delete_item_route(item_id):
     if g.user == None:
         return redirect("/login")
-
+    if get_owner(item_id) != g.user.email:
+        return "G3T 0UT H4x0r!!"
     delete_item(item_id)
     return redirect("/")
 
@@ -355,7 +356,10 @@ def edit_item_route(item_id):
     if g.user is None:
         return redirect("/login")
 
-    elif request.method == 'POST':
+    if g.user.email != get_owner(item_id) or g.user.role != "admin":
+        return "get out hacker!"
+
+    if request.method == 'POST':
         # print("lol")
         owner = item_details[2]
         name = request.form.get("name")

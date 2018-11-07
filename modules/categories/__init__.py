@@ -25,6 +25,7 @@ def view_subcategory(subcategory):
                      "AND u.role != 'banned' "
                      "AND ic.item_id = i.item_id "
                      "AND ic.category = %s "
+                     "AND i.item_id NOT IN (SELECT item_id FROM bid_for WHERE selected='selected')" 
                      "ORDER BY i.item_id DESC", (subcategory,))
     # list of item ids that belong to subcategory
     return curr.fetchall()

@@ -111,6 +111,12 @@ def update_password(email, password):
     conn.commit()
 
 
+def delete_link(email):
+    conn = psycopg2.connect(conn_string)
+    curr = conn.cursor()
+    curr.execute("DELETE FROM forgot_password WHERE email=%s", (email,))
+    conn.commit()
+
 def get_current_user():
     """
     Retrieves the user who is currently logged in. Use this method if you want to find who is logged in
@@ -247,6 +253,7 @@ def reset_password():
             link = request.args.get("link")
             if is_valid_rest(email, link) and request.form.get("new_password") == request.form.get("confirm_password"):
                 update_password(email, request.form.get("new_password"))
+                delete_link(email)
             return redirect("/login")
         else:
             user = get_current_user()
